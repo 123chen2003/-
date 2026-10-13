@@ -1254,6 +1254,51 @@ app.get('/api/prediction', async (req, res) => {
   }
 });
 
+// ============================================================
+// 随机森林 AI 预测（读取 Python 训练生成的缓存 prediction_rf.json）
+// ============================================================
+const RF_PRED_FILE = path.join(__dirname, 'prediction_rf.json');
+
+// 获取 RF 预测结果（Node 端读取缓存 JSON，无需 Python 运行时）
+app.get('/api/rf-prediction', (req, res) => {
+  try {
+    if (!fs.existsSync(RF_PRED_FILE)) {
+      return res.json({ code: -1, msg: 'AI模型预测结果尚未生成，请先在本地训练模型' });
+    }
+    const data = JSON.parse(fs.readFileSync(RF_PRED_FILE, 'utf8'));
+    res.json({ code: 0, data });
+  } catch (e) {
+    console.error('[RF-Predict] Error:', e.message);
+    res.json({ code: -1, msg: 'AI预测读取失败: ' + e.message });
+  }
+});
+
+// RF 模型状态
+app.get('/api/rf-prediction/status', (req, res) => {
+  try {
+    const info = { model_dir: 'models', models: {}, has_models: false };
+    if (fs.existsSync(RF_PRED_FILE)) {
+      const data = JSON.parse(fs.readFileSync(RF_PRED_FILE, 'utf8'));
+      const mi = data.model_info || {};
+      info.has_models = true;
+      info.trained_at = mi.trained_at || data.predict_time || '';
+      info.model_count = mi.model_count || Object.keys(data.predictions || {}).length;
+      info.results = mi.results || {};
+    }
+    res.json({ code: 0, data: info });
+  } catch (e) {
+    res.json({ code: -1, msg: '状态查询失败: ' + e.message });
+  }
+});
+
+// RF 重新训练（Node 端无法执行 Python 训练，返回提示）
+app.post('/api/rf-prediction/train', (req, res) => {
+  res.json({
+    code: -1,
+    msg: '线上环境不支持模型训练，请在本地运行 Python 服务训练后将 prediction_rf.json 部署上线',
+  });
+});
+
 // 消除风险报警
 app.post('/api/prediction/dismiss', (req, res) => {
   const { metric, reason } = req.body;

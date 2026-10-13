@@ -2057,14 +2057,8 @@ body {
 // ============================================================
 // CONFIG & STATE
 // ============================================================
-// 自适应API地址：本地调试走本地服务器代理，线上走Railway
-const _apiBase = (function() {
-  const host = window.location.hostname;
-  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host === '') {
-    return '/api/v1'; // 本地调试，通过Python服务器代理到MDS
-  }
-  return 'https://oil-monitor-platform-production.up.railway.app/api/v1'; // 线上环境
-})();
+// 自适应API地址：始终使用相对路径，前端与API同域，无需硬编码部署地址
+const _apiBase = '/api/v1';
 
 const CFG = {
   apiBase: _apiBase,
@@ -3847,14 +3841,8 @@ async function trainRFModel() {
 // ============================================================
 // PREDICTION ANALYSIS
 // ============================================================
-// API地址自适应：本地调试使用相对路径，部署后使用Railway地址
-const API_BASE_URL = (function() {
-  const host = window.location.hostname;
-  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host === '') {
-    return ''; // 本地调试，使用相对路径
-  }
-  return 'https://oil-monitor-platform-production.up.railway.app'; // 线上环境
-})();
+// API地址：始终使用相对路径，前端与API同域，无需硬编码部署地址
+const API_BASE_URL = '';
 
 async function fetchPredictionData() {
   const content = document.getElementById('predContent');

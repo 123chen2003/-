@@ -1,0 +1,461 @@
+{
+  "predict_time": "2026-10-09 13:39:00",
+  "overall_risk": "安全",
+  "overall_color": "#4caf50",
+  "predictions": {
+    "level1": {
+      "name": "颗粒度≥4μm",
+      "threshold": 20,
+      "current": 7.0,
+      "forecasts": {
+        "1h": {
+          "value": 6.57,
+          "confidence": 0.911,
+          "exceed": false,
+          "margin": 13.43
+        },
+        "6h": {
+          "value": 6.9,
+          "confidence": 0.9254,
+          "exceed": false,
+          "margin": 13.1
+        },
+        "12h": {
+          "value": 7.16,
+          "confidence": 0.8863,
+          "exceed": false,
+          "margin": 12.84
+        },
+        "24h": {
+          "value": 5.37,
+          "confidence": 0.4607,
+          "exceed": false,
+          "margin": 14.63
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "level2": {
+      "name": "颗粒度≥6μm",
+      "threshold": 20,
+      "current": 7.0,
+      "forecasts": {
+        "1h": {
+          "value": 6.65,
+          "confidence": 0.9091,
+          "exceed": false,
+          "margin": 13.35
+        },
+        "6h": {
+          "value": 6.61,
+          "confidence": 0.9003,
+          "exceed": false,
+          "margin": 13.39
+        },
+        "12h": {
+          "value": 7.16,
+          "confidence": 0.8862,
+          "exceed": false,
+          "margin": 12.84
+        },
+        "24h": {
+          "value": 5.54,
+          "confidence": 0.4684,
+          "exceed": false,
+          "margin": 14.46
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "level3": {
+      "name": "颗粒度≥14μm",
+      "threshold": 18,
+      "current": 5.0,
+      "forecasts": {
+        "1h": {
+          "value": 4.16,
+          "confidence": 0.9148,
+          "exceed": false,
+          "margin": 13.84
+        },
+        "6h": {
+          "value": 4.42,
+          "confidence": 0.9115,
+          "exceed": false,
+          "margin": 13.58
+        },
+        "12h": {
+          "value": 6.03,
+          "confidence": 0.918,
+          "exceed": false,
+          "margin": 11.97
+        },
+        "24h": {
+          "value": 2.75,
+          "confidence": 0.892,
+          "exceed": false,
+          "margin": 15.25
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "level4": {
+      "name": "颗粒度≥21μm",
+      "threshold": 18,
+      "current": 4.0,
+      "forecasts": {
+        "1h": {
+          "value": 3.77,
+          "confidence": 0.9115,
+          "exceed": false,
+          "margin": 14.23
+        },
+        "6h": {
+          "value": 3.1,
+          "confidence": 0.8416,
+          "exceed": false,
+          "margin": 14.9
+        },
+        "12h": {
+          "value": 5.15,
+          "confidence": 0.8488,
+          "exceed": false,
+          "margin": 12.85
+        },
+        "24h": {
+          "value": 2.97,
+          "confidence": 0.8703,
+          "exceed": false,
+          "margin": 15.03
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "level5": {
+      "name": "颗粒度≥38μm",
+      "threshold": 16,
+      "current": 8.0,
+      "forecasts": {
+        "1h": {
+          "value": 8.51,
+          "confidence": 0.1393,
+          "exceed": false,
+          "margin": 7.49
+        },
+        "6h": {
+          "value": 6.95,
+          "confidence": -0.1812,
+          "exceed": false,
+          "margin": 9.05
+        },
+        "24h": {
+          "value": 8.64,
+          "confidence": 0.0406,
+          "exceed": false,
+          "margin": 7.36
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-09-21 12:20:00"
+    },
+    "temperature": {
+      "name": "油温",
+      "threshold": 45,
+      "current": 28.4,
+      "forecasts": {
+        "1h": {
+          "value": 28.46,
+          "confidence": 0.9343,
+          "exceed": false,
+          "margin": 16.54
+        },
+        "6h": {
+          "value": 28.37,
+          "confidence": 0.4273,
+          "exceed": false,
+          "margin": 16.63
+        },
+        "12h": {
+          "value": 28.01,
+          "confidence": 0.4391,
+          "exceed": false,
+          "margin": 16.99
+        },
+        "24h": {
+          "value": 28.18,
+          "confidence": 0.7471,
+          "exceed": false,
+          "margin": 16.82
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "water_content": {
+      "name": "水含量",
+      "threshold": 200,
+      "current": 51.0,
+      "forecasts": {
+        "1h": {
+          "value": 50.19,
+          "confidence": 0.9548,
+          "exceed": false,
+          "margin": 149.81
+        },
+        "6h": {
+          "value": 48.4,
+          "confidence": 0.7789,
+          "exceed": false,
+          "margin": 151.6
+        },
+        "12h": {
+          "value": 47.61,
+          "confidence": 0.6051,
+          "exceed": false,
+          "margin": 152.39
+        },
+        "24h": {
+          "value": 50.43,
+          "confidence": 0.645,
+          "exceed": false,
+          "margin": 149.57
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    },
+    "water_activity": {
+      "name": "水活性",
+      "threshold": 0.7,
+      "current": 0.41,
+      "forecasts": {
+        "1h": {
+          "value": 0.4,
+          "confidence": 0.9367,
+          "exceed": false,
+          "margin": 0.3
+        },
+        "6h": {
+          "value": 0.38,
+          "confidence": 0.6547,
+          "exceed": false,
+          "margin": 0.32
+        },
+        "12h": {
+          "value": 0.38,
+          "confidence": 0.4139,
+          "exceed": false,
+          "margin": 0.32
+        },
+        "24h": {
+          "value": 0.47,
+          "confidence": 0.332,
+          "exceed": false,
+          "margin": 0.23
+        }
+      },
+      "risk_level": "安全",
+      "risk_color": "#4caf50",
+      "last_time": "2026-10-09 09:00:00"
+    }
+  },
+  "model_info": {
+    "level1_12h": {
+      "trained_at": "2026-10-05T10:36:00.870405",
+      "samples": 130,
+      "r2": 0.8863,
+      "mae": 0.992
+    },
+    "level1_1h": {
+      "trained_at": "2026-10-05T10:35:56.689874",
+      "samples": 2053,
+      "r2": 0.911,
+      "mae": 0.776
+    },
+    "level1_24h": {
+      "trained_at": "2026-10-05T10:36:03.553403",
+      "samples": 1732,
+      "r2": 0.4607,
+      "mae": 1.708
+    },
+    "level1_6h": {
+      "trained_at": "2026-10-05T10:35:59.545407",
+      "samples": 601,
+      "r2": 0.9254,
+      "mae": 0.89
+    },
+    "level2_12h": {
+      "trained_at": "2026-10-05T10:36:09.948403",
+      "samples": 130,
+      "r2": 0.8862,
+      "mae": 0.992
+    },
+    "level2_1h": {
+      "trained_at": "2026-10-05T10:36:06.230407",
+      "samples": 2047,
+      "r2": 0.9091,
+      "mae": 0.792
+    },
+    "level2_24h": {
+      "trained_at": "2026-10-05T10:36:12.700405",
+      "samples": 1726,
+      "r2": 0.4684,
+      "mae": 1.753
+    },
+    "level2_6h": {
+      "trained_at": "2026-10-05T10:36:08.728406",
+      "samples": 595,
+      "r2": 0.9003,
+      "mae": 0.938
+    },
+    "level3_12h": {
+      "trained_at": "2026-10-05T10:36:19.139403",
+      "samples": 127,
+      "r2": 0.918,
+      "mae": 0.912
+    },
+    "level3_1h": {
+      "trained_at": "2026-10-05T10:36:15.334403",
+      "samples": 1897,
+      "r2": 0.9148,
+      "mae": 0.773
+    },
+    "level3_24h": {
+      "trained_at": "2026-10-05T10:36:21.827408",
+      "samples": 1558,
+      "r2": 0.892,
+      "mae": 0.834
+    },
+    "level3_6h": {
+      "trained_at": "2026-10-05T10:36:17.921405",
+      "samples": 530,
+      "r2": 0.9115,
+      "mae": 0.981
+    },
+    "level4_12h": {
+      "trained_at": "2026-10-05T10:36:28.376402",
+      "samples": 99,
+      "r2": 0.8488,
+      "mae": 0.914
+    },
+    "level4_1h": {
+      "trained_at": "2026-10-05T10:36:24.545406",
+      "samples": 1707,
+      "r2": 0.9115,
+      "mae": 0.812
+    },
+    "level4_24h": {
+      "trained_at": "2026-10-05T10:36:30.946404",
+      "samples": 1381,
+      "r2": 0.8703,
+      "mae": 0.874
+    },
+    "level4_6h": {
+      "trained_at": "2026-10-05T10:36:27.115404",
+      "samples": 481,
+      "r2": 0.8416,
+      "mae": 1.2
+    },
+    "level5_1h": {
+      "trained_at": "2026-10-05T10:36:33.463405",
+      "samples": 1086,
+      "r2": 0.1393,
+      "mae": 0.614
+    },
+    "level5_24h": {
+      "trained_at": "2026-10-05T10:36:38.805403",
+      "samples": 1024,
+      "r2": 0.0406,
+      "mae": 0.435
+    },
+    "level5_6h": {
+      "trained_at": "2026-10-05T10:36:36.111404",
+      "samples": 293,
+      "r2": -0.1812,
+      "mae": 1.157
+    },
+    "temperature_12h": {
+      "trained_at": "2026-10-05T10:36:52.435410",
+      "samples": 15141,
+      "r2": 0.4391,
+      "mae": 1.185
+    },
+    "temperature_1h": {
+      "trained_at": "2026-10-05T10:36:43.267407",
+      "samples": 15617,
+      "r2": 0.9343,
+      "mae": 0.347
+    },
+    "temperature_24h": {
+      "trained_at": "2026-10-05T10:36:56.898405",
+      "samples": 14858,
+      "r2": 0.7471,
+      "mae": 0.776
+    },
+    "temperature_6h": {
+      "trained_at": "2026-10-05T10:36:47.786405",
+      "samples": 15354,
+      "r2": 0.4273,
+      "mae": 1.186
+    },
+    "water_activity_12h": {
+      "trained_at": "2026-10-05T10:37:24.683559",
+      "samples": 15141,
+      "r2": 0.4139,
+      "mae": 0.021
+    },
+    "water_activity_1h": {
+      "trained_at": "2026-10-05T10:37:17.438559",
+      "samples": 15617,
+      "r2": 0.9367,
+      "mae": 0.006
+    },
+    "water_activity_24h": {
+      "trained_at": "2026-10-05T10:37:28.309620",
+      "samples": 14858,
+      "r2": 0.332,
+      "mae": 0.023
+    },
+    "water_activity_6h": {
+      "trained_at": "2026-10-05T10:37:20.984558",
+      "samples": 15354,
+      "r2": 0.6547,
+      "mae": 0.015
+    },
+    "water_content_12h": {
+      "trained_at": "2026-10-05T10:37:09.410473",
+      "samples": 15141,
+      "r2": 0.6051,
+      "mae": 4.209
+    },
+    "water_content_1h": {
+      "trained_at": "2026-10-05T10:37:01.094405",
+      "samples": 15617,
+      "r2": 0.9548,
+      "mae": 1.295
+    },
+    "water_content_24h": {
+      "trained_at": "2026-10-05T10:37:13.421555",
+      "samples": 14858,
+      "r2": 0.645,
+      "mae": 3.822
+    },
+    "water_content_6h": {
+      "trained_at": "2026-10-05T10:37:05.328413",
+      "samples": 15354,
+      "r2": 0.7789,
+      "mae": 3.077
+    }
+  }
+}
