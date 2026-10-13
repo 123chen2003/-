@@ -1,0 +1,4467 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="default" data-lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>冲压车间油液智能监测平台</title>
+<style>
+/* ============================================================
+   CSS VARIABLES & THEMES
+   ============================================================ */
+:root {
+  --bg-deep: #0c1220;
+  --bg-primary: #111a2e;
+  --bg-secondary: #162040;
+  --bg-card: rgba(18, 28, 52, 0.7);
+  --bg-glass: rgba(255,255,255,0.04);
+  --text-primary: #e8ecf4;
+  --text-secondary: #7b8db5;
+  --text-dim: #3d5280;
+  --accent: #00d4ff;
+  --accent2: #6366f1;
+  --accent-dim: rgba(0, 212, 255, 0.1);
+  --accent-glow: rgba(0, 212, 255, 0.35);
+  --danger: #ff3b5c;
+  --warning: #ffaa00;
+  --success: #00e676;
+  --border: rgba(255,255,255,0.07);
+  --border-accent: rgba(0, 212, 255, 0.25);
+  --shadow: 0 8px 32px rgba(0,0,0,0.3);
+  --shadow-accent: 0 0 40px rgba(0, 212, 255, 0.1);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  --font-mono: 'SF Mono', 'Cascadia Code', 'Consolas', monospace;
+  --font-main: -apple-system, 'Microsoft YaHei', 'PingFang SC', 'Segoe UI', sans-serif;
+  --oil-color: rgba(0, 180, 220, 0.35);
+  --oil-color2: rgba(0, 140, 200, 0.18);
+  --boil-color: rgba(255, 100, 50, 0.6);
+  --steam-color: rgba(255,255,255,0.15);
+  --nav-height: 60px;
+  --page-padding: 24px;
+  --orb1: rgba(0, 212, 255, 0.08);
+  --orb2: rgba(99, 102, 241, 0.06);
+  --orb3: rgba(0, 230, 118, 0.04);
+  --grid-color: rgba(0, 212, 255, 0.03);
+}
+
+[data-theme="cyberpunk"] {
+  --bg-deep: #0f0520; --bg-primary: #180a35; --bg-secondary: #20104a;
+  --bg-card: rgba(25, 10, 60, 0.7); --accent: #ff00e5; --accent2: #ffdd00;
+  --accent-dim: rgba(255,0,229,0.1); --accent-glow: rgba(255,0,229,0.35);
+  --border-accent: rgba(255,0,229,0.25); --shadow-accent: 0 0 40px rgba(255,0,229,0.12);
+  --oil-color: rgba(200,0,220,0.3); --oil-color2: rgba(150,0,180,0.15);
+  --boil-color: rgba(255,50,100,0.6);
+  --orb1: rgba(255,0,229,0.08); --orb2: rgba(255,221,0,0.05); --orb3: rgba(180,0,255,0.04);
+  --grid-color: rgba(255,0,229,0.03);
+}
+[data-theme="matrix"] {
+  --bg-deep: #030d03; --bg-primary: #071a07; --bg-secondary: #0c280c;
+  --bg-card: rgba(8, 30, 8, 0.7); --accent: #00ff41; --accent2: #88ff00;
+  --accent-dim: rgba(0,255,65,0.08); --accent-glow: rgba(0,255,65,0.3);
+  --border-accent: rgba(0,255,65,0.2); --shadow-accent: 0 0 40px rgba(0,255,65,0.08);
+  --oil-color: rgba(0,200,50,0.25); --oil-color2: rgba(0,150,30,0.12);
+  --boil-color: rgba(0,255,80,0.5);
+  --orb1: rgba(0,255,65,0.06); --orb2: rgba(136,255,0,0.04); --orb3: rgba(0,200,50,0.03);
+  --grid-color: rgba(0,255,65,0.025);
+}
+[data-theme="deepblue"] {
+  --bg-deep: #040c1e; --bg-primary: #0a1838; --bg-secondary: #102450;
+  --bg-card: rgba(10, 25, 55, 0.7); --accent: #4488ff; --accent2: #00bbff;
+  --accent-dim: rgba(68,136,255,0.1); --accent-glow: rgba(68,136,255,0.3);
+  --border-accent: rgba(68,136,255,0.25); --shadow-accent: 0 0 40px rgba(68,136,255,0.1);
+  --oil-color: rgba(40,100,220,0.3); --oil-color2: rgba(30,70,180,0.15);
+  --boil-color: rgba(60,120,255,0.5);
+  --orb1: rgba(68,136,255,0.08); --orb2: rgba(0,187,255,0.05); --orb3: rgba(40,80,200,0.04);
+  --grid-color: rgba(68,136,255,0.03);
+}
+[data-theme="flame"] {
+  --bg-deep: #140800; --bg-primary: #201005; --bg-secondary: #301808;
+  --bg-card: rgba(40, 18, 5, 0.7); --accent: #ff6600; --accent2: #ff2200;
+  --accent-dim: rgba(255,102,0,0.1); --accent-glow: rgba(255,102,0,0.35);
+  --border-accent: rgba(255,102,0,0.25); --shadow-accent: 0 0 40px rgba(255,102,0,0.1);
+  --oil-color: rgba(220,80,0,0.3); --oil-color2: rgba(180,60,0,0.15);
+  --boil-color: rgba(255,80,0,0.7);
+  --orb1: rgba(255,102,0,0.07); --orb2: rgba(255,34,0,0.05); --orb3: rgba(255,180,0,0.04);
+  --grid-color: rgba(255,102,0,0.025);
+}
+[data-theme="aurora"] {
+  --bg-deep: #041410; --bg-primary: #082820; --bg-secondary: #0c3830;
+  --bg-card: rgba(8, 45, 35, 0.7); --accent: #00e676; --accent2: #00bcd4;
+  --accent-dim: rgba(0,230,118,0.08); --accent-glow: rgba(0,230,118,0.3);
+  --border-accent: rgba(0,230,118,0.2); --shadow-accent: 0 0 40px rgba(0,230,118,0.08);
+  --oil-color: rgba(0,200,100,0.25); --oil-color2: rgba(0,160,80,0.12);
+  --boil-color: rgba(0,230,120,0.5);
+  --orb1: rgba(0,230,118,0.06); --orb2: rgba(0,188,212,0.05); --orb3: rgba(100,255,180,0.03);
+  --grid-color: rgba(0,230,118,0.025);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { font-size: 16px; scroll-behavior: smooth; }
+body {
+  font-family: var(--font-main);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--transition), color var(--transition);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   BACKGROUND EFFECTS - Rich layered system
+   ============================================================ */
+#bgCanvas {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 0; pointer-events: none;
+}
+
+/* Gradient mesh background */
+.bg-gradient-mesh {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, var(--orb1), transparent),
+    radial-gradient(ellipse 60% 80% at 90% 80%, var(--orb2), transparent),
+    radial-gradient(ellipse 70% 50% at 50% 50%, var(--orb3), transparent),
+    linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-primary) 50%, var(--bg-deep) 100%);
+  transition: all 1s ease;
+}
+
+/* Floating orbs */
+.bg-orb {
+  position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+  filter: blur(80px);
+  animation: orbFloat 20s ease-in-out infinite;
+}
+.bg-orb-1 {
+  width: 500px; height: 500px; top: -10%; left: -5%;
+  background: var(--orb1);
+  animation-duration: 25s;
+}
+.bg-orb-2 {
+  width: 400px; height: 400px; bottom: -10%; right: -5%;
+  background: var(--orb2);
+  animation-duration: 30s; animation-delay: -5s;
+}
+.bg-orb-3 {
+  width: 300px; height: 300px; top: 40%; left: 60%;
+  background: var(--orb3);
+  animation-duration: 22s; animation-delay: -10s;
+}
+@keyframes orbFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.1); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(40px, 30px) scale(1.05); }
+}
+
+/* Subtle grid overlay */
+.bg-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--grid-color) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 70%);
+}
+
+/* Scanline overlay */
+.scanline-overlay {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.012) 3px, rgba(0,0,0,0.012) 6px);
+}
+
+/* Vignette */
+.vignette {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 1;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%);
+}
+
+/* ============================================================
+   PAGE SYSTEM
+   ============================================================ */
+.page {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 2; overflow-y: auto; overflow-x: hidden;
+  padding: var(--nav-height) 0 80px 0;
+  opacity: 0; transform: translateY(20px) scale(0.99);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.page.active {
+  opacity: 1; transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+.page-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--page-padding);
+}
+
+/* ============================================================
+   TOP NAVIGATION
+   ============================================================ */
+.top-nav {
+  position: fixed; top: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 24px;
+  background: linear-gradient(180deg, rgba(12,18,32,0.92) 0%, rgba(12,18,32,0.8) 100%);
+  backdrop-filter: blur(30px) saturate(1.6);
+  border-bottom: 1px solid var(--border);
+  transition: background var(--transition);
+}
+/* Nav bottom glow line */
+.top-nav::after {
+  content: ''; position: absolute; bottom: -1px; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.5;
+  animation: navGlow 4s ease-in-out infinite;
+}
+@keyframes navGlow {
+  0%, 100% { opacity: 0.3; left: 10%; right: 10%; }
+  50% { opacity: 0.7; left: 5%; right: 5%; }
+}
+
+.nav-brand { display: flex; align-items: center; gap: 12px; }
+.nav-logo {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent-dim), transparent);
+  border: 1px solid var(--border-accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; position: relative;
+  box-shadow: 0 0 20px var(--accent-dim);
+  animation: logoPulse 3s ease-in-out infinite;
+}
+/* Logo ring animation */
+.nav-logo::before {
+  content: ''; position: absolute; inset: -3px;
+  border-radius: 12px; border: 1px solid transparent;
+  background: linear-gradient(135deg, var(--accent), transparent, var(--accent2)) border-box;
+  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  animation: logoRingSpin 6s linear infinite;
+  opacity: 0.6;
+}
+@keyframes logoPulse {
+  0%, 100% { box-shadow: 0 0 20px var(--accent-dim); }
+  50% { box-shadow: 0 0 35px var(--accent-glow); }
+}
+@keyframes logoRingSpin {
+  from { transform: rotate(0deg); } to { transform: rotate(360deg); }
+}
+
+.nav-title {
+  font-size: 16px; font-weight: 700; letter-spacing: 1px;
+  background: linear-gradient(135deg, var(--accent), var(--text-primary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.nav-subtitle {
+  font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase;
+}
+.nav-actions { display: flex; align-items: center; gap: 12px; }
+.nav-time {
+  font-family: var(--font-mono);
+  font-size: 13px; color: var(--text-secondary);
+}
+.nav-btn {
+  width: 36px; height: 36px; border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.nav-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, var(--accent-dim), transparent);
+  opacity: 0; transition: opacity 0.3s;
+}
+.nav-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  box-shadow: 0 0 15px var(--accent-dim);
+}
+.nav-btn:hover::before { opacity: 1; }
+
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 14px; border-radius: 20px;
+  font-size: 12px; font-weight: 600;
+  border: 1px solid;
+  transition: all 0.3s;
+  position: relative;
+}
+.status-pill.normal { color: var(--success); border-color: rgba(0,230,118,0.25); background: rgba(0,230,118,0.08); }
+.status-pill.warning { color: var(--warning); border-color: rgba(255,170,0,0.25); background: rgba(255,170,0,0.08); }
+.status-pill.critical { color: var(--danger); border-color: rgba(255,59,92,0.25); background: rgba(255,59,92,0.08); }
+.status-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: currentColor;
+  animation: dotPulse 2s ease-in-out infinite;
+}
+@keyframes dotPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.4; transform:scale(0.7); } }
+
+/* ============================================================
+   BOTTOM TAB BAR
+   ============================================================ */
+.tab-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: 64px; z-index: 100;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 0 24px;
+  background: linear-gradient(0deg, rgba(12,18,32,0.95) 0%, rgba(12,18,32,0.85) 100%);
+  backdrop-filter: blur(30px) saturate(1.6);
+  border-top: 1px solid var(--border);
+  transition: background var(--transition);
+}
+.tab-bar::before {
+  content: ''; position: absolute; top: -1px; left: 10%; right: 10%; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.4;
+}
+.tab-item {
+  flex: 1; max-width: 120px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 12px; border-radius: 12px;
+  cursor: pointer; transition: all 0.3s;
+  color: var(--text-dim);
+  border: 1px solid transparent;
+  position: relative;
+}
+.tab-item:hover { color: var(--text-secondary); background: var(--bg-glass); }
+.tab-item.active {
+  color: var(--accent);
+  background: var(--accent-dim);
+  border-color: var(--border-accent);
+}
+/* Active tab glow dot */
+.tab-item.active::after {
+  content: ''; position: absolute; bottom: -4px; left: 50%; transform: translateX(-50%);
+  width: 20px; height: 3px; border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent-glow);
+}
+.tab-icon { font-size: 20px; line-height: 1; }
+.tab-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; }
+
+/* ============================================================
+   SECTION HEADERS
+   ============================================================ */
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 20px;
+}
+.section-line {
+  width: 3px; height: 20px;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  box-shadow: 0 0 8px var(--accent-dim);
+}
+.section-title {
+  font-size: 15px; font-weight: 700; letter-spacing: 1px;
+}
+.section-sub {
+  font-size: 11px; color: var(--text-dim); margin-left: auto;
+}
+
+/* ============================================================
+   OIL CARD (with sloshing liquid animation)
+   ============================================================ */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px 32px;
+  margin-bottom: 28px;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  justify-items: center;
+}
+
+/* Bottle-shaped card */
+.oil-card {
+  position: relative;
+  width: 180px;
+  height: 240px;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s;
+}
+.oil-card:hover {
+  transform: translateY(-6px) scale(1.05);
+}
+
+/* Bottle body - rounded rectangle with very round corners */
+.bottle-body {
+  position: absolute;
+  inset: 0;
+  border-radius: 40px 40px 36px 36px;
+  background: linear-gradient(180deg, rgba(15,20,35,0.95) 0%, rgba(10,15,30,0.98) 100%);
+  border: 1.5px solid rgba(255,255,255,0.06);
+  overflow: hidden;
+  box-shadow:
+    0 0 30px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(255,255,255,0.05),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+
+/* Glass reflection highlight */
+.bottle-body::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 12px;
+  width: 40px; height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08), transparent);
+  transform: rotate(-20deg);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Dark ambient glow around bottle */
+.bottle-glow {
+  position: absolute;
+  inset: -15px;
+  border-radius: 50px;
+  background: radial-gradient(ellipse at center, var(--bottle-glow-color, rgba(0,180,220,0.08)) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+  transition: background 0.8s;
+}
+.oil-card:hover .bottle-glow {
+  background: radial-gradient(ellipse at center, var(--bottle-glow-color, rgba(0,180,220,0.15)) 0%, transparent 70%);
+}
+
+/* Liquid fill inside bottle */
+.bottle-liquid {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 55%;
+  border-radius: 0 0 36px 36px;
+  overflow: hidden;
+  z-index: 1;
+}
+.bottle-liquid-fill {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100%;
+  background: linear-gradient(180deg, var(--liquid-top, rgba(0,180,220,0.25)), var(--liquid-bottom, rgba(0,120,180,0.4)));
+  transition: height 1s ease, background 1s ease;
+}
+
+/* Liquid surface wave */
+.bottle-liquid-fill::before {
+  content: '';
+  position: absolute;
+  top: -6px; left: -10%; right: -10%;
+  height: 12px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 12'%3E%3Cpath d='M0,6 C25,2 50,10 75,6 C100,2 125,10 150,6 C175,2 200,10 200,6 L200,12 L0,12 Z' fill='%23ffffff' opacity='0.08'/%3E%3C/svg%3E") repeat-x;
+  background-size: 200px 12px;
+  animation: liquidWave 3s ease-in-out infinite;
+}
+@keyframes liquidWave {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(-50px); }
+}
+
+/* Particle animation container */
+.particle-field {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.float-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.5), rgba(255,255,255,0.1));
+  box-shadow: 0 0 4px rgba(255,255,255,0.15);
+  animation: particleFloat linear infinite;
+}
+@keyframes particleFloat {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 0; }
+  10% { opacity: 0.7; }
+  90% { opacity: 0.7; }
+  100% { transform: translate(var(--drift-x, 10px), var(--drift-y, -30px)) rotate(360deg); opacity: 0; }
+}
+
+/* Temperature card special effects */
+.temp-bottle .bottle-liquid-fill {
+  background: linear-gradient(180deg, var(--temp-liquid-top, rgba(0,150,255,0.3)), var(--temp-liquid-bottom, rgba(0,100,200,0.5)));
+  transition: background 1.5s ease;
+}
+
+/* Bubbles for temperature */
+.temp-bubble-container {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 100%;
+  z-index: 3;
+  pointer-events: none;
+  overflow: hidden;
+}
+.temp-bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.4), rgba(255,200,100,0.1));
+  border: 1px solid rgba(255,255,255,0.2);
+  animation: tempBubbleRise linear infinite;
+}
+@keyframes tempBubbleRise {
+  0% { transform: translateY(0) scale(1); opacity: 0.7; }
+  50% { transform: translateY(-50%) scale(1.15) translateX(4px); opacity: 0.5; }
+  100% { transform: translateY(-110%) scale(0.4) translateX(-2px); opacity: 0; }
+}
+
+/* Steam for high temperature */
+.steam-container {
+  position: absolute;
+  top: -15px; left: 10%; right: 10%;
+  height: 30px;
+  z-index: 5;
+  pointer-events: none;
+  overflow: visible;
+}
+.steam-puff {
+  position: absolute;
+  bottom: 0;
+  width: 10px; height: 10px;
+  background: radial-gradient(circle, rgba(255,255,255,0.2), transparent);
+  border-radius: 50%;
+  filter: blur(3px);
+  animation: steamFloat 2.5s ease-out infinite;
+}
+@keyframes steamFloat {
+  0% { transform: translateY(0) scale(1); opacity: 0.5; }
+  100% { transform: translateY(-35px) scale(2.5); opacity: 0; }
+}
+
+/* Boiling shake animation */
+@keyframes boilShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-1px) translateY(0.5px); }
+  75% { transform: translateX(1px) translateY(-0.5px); }
+}
+.boiling .bottle-body {
+  animation: boilShake 0.15s ease-in-out infinite;
+}
+
+/* Card content overlay */
+.oil-card-content {
+  position: relative;
+  z-index: 8;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 16px 14px 14px;
+}
+.oil-card-label {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  text-align: center;
+}
+.oil-card-value-wrap {
+  text-align: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+.oil-card-value {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-shadow: 0 0 20px rgba(255,255,255,0.1);
+  line-height: 1;
+}
+.oil-card-unit {
+  font-size: 11px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+.oil-card-status {
+  display: block;
+  text-align: center;
+  padding: 3px 10px;
+  border-radius: 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  margin: 0 auto;
+  width: fit-content;
+}
+.oil-card-status.good { color: var(--success); background: rgba(0,230,118,0.1); }
+.oil-card-status.warn { color: var(--warning); background: rgba(255,170,0,0.1); }
+.oil-card-status.bad { color: var(--danger); background: rgba(255,59,92,0.1); }
+.card-trend-indicator {
+  display: block;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  margin-top: 4px;
+  opacity: 0.85;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   CHART PANELS
+   ============================================================ */
+.charts-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 800px) { .charts-row { grid-template-columns: 1fr; } }
+
+.chart-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  transition: all 0.4s;
+  position: relative; overflow: hidden;
+}
+/* Chart panel top accent line */
+.chart-panel::before {
+  content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0; transition: opacity 0.4s;
+}
+.chart-panel:hover { border-color: var(--border-accent); box-shadow: var(--shadow-accent); }
+.chart-panel:hover::before { opacity: 1; }
+
+.chart-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.chart-title {
+  font-size: 13px; font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.chart-title::before {
+  content: ''; width: 3px; height: 14px;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border-radius: 2px;
+  box-shadow: 0 0 6px var(--accent-dim);
+}
+.chart-badge {
+  font-size: 10px; padding: 2px 10px;
+  border-radius: 6px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 600;
+  border: 1px solid var(--border-accent);
+}
+.chart-canvas-wrap { position: relative; width: 100%; height: 200px; }
+.chart-canvas-wrap canvas { width: 100% !important; height: 100% !important; }
+
+/* ============================================================
+   DATA TABLE
+   ============================================================ */
+.table-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  margin-bottom: 28px;
+  overflow-x: auto;
+  position: relative;
+}
+.table-panel::before {
+  content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.3;
+}
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th {
+  text-align: left; padding: 10px 10px;
+  color: var(--text-dim); font-weight: 600;
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.02);
+  font-family: var(--font-mono); font-size: 12px;
+  white-space: nowrap; transition: background 0.2s;
+}
+.data-table tr:hover td { background: var(--bg-glass); }
+
+/* ============================================================
+   SETTINGS PANEL (slide-in)
+   ============================================================ */
+.settings-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.4s;
+}
+.settings-overlay.open { opacity: 1; pointer-events: auto; }
+
+.settings-panel {
+  position: fixed; top: 0; right: -420px; bottom: 0;
+  width: 400px; max-width: 90vw; z-index: 201;
+  background: var(--bg-primary);
+  border-left: 1px solid var(--border);
+  padding: 24px; overflow-y: auto;
+  transition: right 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.settings-panel.open { right: 0; }
+
+.settings-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 32px;
+}
+.settings-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.settings-close {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--text-secondary); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.3s;
+}
+.settings-close:hover { border-color: var(--danger); color: var(--danger); }
+
+.settings-group { margin-bottom: 28px; }
+.settings-group-title {
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 2px;
+  margin-bottom: 14px; font-weight: 700;
+}
+.theme-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.theme-option {
+  padding: 12px 8px; border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--bg-glass); cursor: pointer;
+  text-align: center; transition: all 0.3s;
+}
+.theme-option:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.theme-option.active { border-color: var(--accent); background: var(--accent-dim); }
+.theme-swatch {
+  width: 32px; height: 32px; border-radius: 50%;
+  margin: 0 auto 8px;
+  border: 2px solid rgba(255,255,255,0.1);
+}
+.theme-option-name { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+
+.lang-options { display: flex; gap: 10px; }
+.lang-option {
+  flex: 1; padding: 12px; border-radius: var(--radius-sm);
+  border: 2px solid var(--border);
+  background: var(--bg-glass); cursor: pointer;
+  text-align: center; font-size: 13px; font-weight: 600;
+  color: var(--text-secondary); transition: all 0.3s;
+}
+.lang-option:hover { border-color: var(--border-accent); }
+.lang-option.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+.settings-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+.settings-item-label { font-size: 13px; color: var(--text-secondary); }
+.toggle-switch {
+  width: 44px; height: 24px; border-radius: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  cursor: pointer; position: relative; transition: all 0.3s;
+}
+.toggle-switch.on { background: var(--accent-dim); border-color: var(--accent); }
+.toggle-switch::after {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--text-secondary);
+  top: 2px; left: 2px; transition: all 0.3s;
+}
+.toggle-switch.on::after { left: 22px; background: var(--accent); }
+
+/* ============================================================
+   TREND PAGE
+   ============================================================ */
+.trend-controls { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.trend-btn {
+  padding: 8px 18px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+  font-family: var(--font-main);
+}
+.trend-btn:hover { border-color: var(--border-accent); color: var(--text-primary); }
+.trend-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+
+/* Trend advanced controls */
+.trend-advanced-controls {
+  display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+  align-items: flex-end;
+  padding: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  backdrop-filter: blur(16px);
+}
+.trend-select-group { display: flex; flex-direction: column; gap: 4px; }
+.trend-select-label {
+  font-size: 10px; color: var(--text-secondary);
+  text-transform: uppercase; letter-spacing: 0.5px;
+  font-weight: 600;
+}
+.trend-select {
+  padding: 7px 28px 7px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: all 0.3s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='rgba(255,255,255,0.4)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  min-width: 120px;
+}
+.trend-select:hover { border-color: var(--border-accent); }
+.trend-select:focus { outline: none; border-color: var(--accent); }
+.trend-select option { background: #1a1f2e; color: #e0e0e0; }
+
+.trend-date-range { display: flex; align-items: center; gap: 6px; }
+.trend-date-sep { color: var(--text-secondary); font-size: 12px; }
+.trend-date-input {
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-size: 11px;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 120px;
+}
+.trend-date-input:hover { border-color: var(--border-accent); }
+.trend-date-input:focus { outline: none; border-color: var(--accent); }
+.trend-date-input::-webkit-calendar-picker-indicator { filter: invert(0.6); cursor: pointer; }
+
+.trend-fetch-btn {
+  padding: 7px 20px;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+  font-family: var(--font-main);
+  white-space: nowrap;
+}
+.trend-fetch-btn:hover { background: var(--accent); color: #fff; }
+.trend-fetch-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.chart-info {
+  font-size: 10px; color: var(--text-secondary);
+  display: flex; gap: 12px; align-items: center;
+}
+
+.trend-chart-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  backdrop-filter: blur(16px);
+  margin-bottom: 20px;
+  position: relative; overflow: hidden;
+}
+.trend-chart-panel::before {
+  content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.3;
+}
+.trend-chart-panel .chart-canvas-wrap { height: 380px; }
+
+.trend-stats {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px; margin-bottom: 20px;
+}
+.trend-stat-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px; text-align: center;
+  backdrop-filter: blur(12px);
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.trend-stat-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  opacity: 0; transition: opacity 0.3s;
+}
+.trend-stat-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.trend-stat-card:hover::after { opacity: 1; }
+.trend-stat-label { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.trend-stat-value { font-family: var(--font-mono); font-size: 22px; font-weight: 700; color: var(--accent); }
+.trend-stat-sub { font-size: 10px; color: var(--text-dim); margin-top: 4px; }
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer-info {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px; color: var(--text-dim);
+  backdrop-filter: blur(12px);
+}
+.footer-thresholds { display: flex; gap: 16px; flex-wrap: wrap; }
+.footer-threshold { display: flex; align-items: center; gap: 5px; }
+.footer-dot { width: 5px; height: 5px; border-radius: 50%; }
+.footer-dot.w { background: var(--warning); box-shadow: 0 0 6px rgba(255,170,0,0.4); }
+.footer-dot.c { background: var(--danger); box-shadow: 0 0 6px rgba(255,59,92,0.4); }
+
+/* ============================================================
+   GLOWING DIVIDER
+   ============================================================ */
+.glow-divider {
+  height: 1px; margin: 24px 0;
+  background: linear-gradient(90deg, transparent, var(--border-accent), var(--accent-glow), var(--border-accent), transparent);
+  opacity: 0.4;
+  animation: dividerPulse 5s ease-in-out infinite;
+}
+@keyframes dividerPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-in {
+  animation: fadeInUp 0.5s ease forwards;
+  opacity: 0;
+}
+.animate-in:nth-child(1) { animation-delay: 0.05s; }
+.animate-in:nth-child(2) { animation-delay: 0.1s; }
+.animate-in:nth-child(3) { animation-delay: 0.15s; }
+.animate-in:nth-child(4) { animation-delay: 0.2s; }
+.animate-in:nth-child(5) { animation-delay: 0.25s; }
+.animate-in:nth-child(6) { animation-delay: 0.3s; }
+.animate-in:nth-child(7) { animation-delay: 0.35s; }
+.animate-in:nth-child(8) { animation-delay: 0.4s; }
+
+/* Breathing glow on accent elements */
+@keyframes breatheGlow {
+  0%, 100% { filter: drop-shadow(0 0 2px var(--accent-dim)); }
+  50% { filter: drop-shadow(0 0 8px var(--accent-glow)); }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ============================================================
+   CHART TOOLTIP
+   ============================================================ */
+.chart-tooltip {
+  position: fixed; z-index: 500;
+  background: rgba(10, 16, 30, 0.94);
+  border: 1px solid var(--border-accent);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 11px;
+  color: var(--text-primary);
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.18s, transform 0.18s;
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 20px var(--accent-dim);
+  max-width: 220px;
+  white-space: nowrap;
+}
+.chart-tooltip.visible { opacity: 1; transform: translateY(0); }
+.chart-tooltip .tt-date {
+  color: var(--text-dim); font-size: 9px;
+  margin-bottom: 6px; letter-spacing: 0.5px;
+}
+.chart-tooltip .tt-row {
+  display: flex; align-items: center; gap: 7px;
+  padding: 2px 0;
+}
+.chart-tooltip .tt-dot {
+  width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0;
+}
+.chart-tooltip .tt-label { color: var(--text-secondary); font-size: 10px; }
+.chart-tooltip .tt-val {
+  font-family: var(--font-mono); font-weight: 700;
+  margin-left: auto; font-size: 12px;
+}
+
+/* ============================================================
+   BRIGHTNESS / CONTRAST SLIDERS
+   ============================================================ */
+.slider-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+}
+.slider-row:last-child { border-bottom: none; }
+.slider-label {
+  font-size: 13px; color: var(--text-secondary);
+  min-width: 56px;
+}
+.slider-input {
+  flex: 1; -webkit-appearance: none; appearance: none;
+  height: 4px; border-radius: 2px;
+  background: var(--bg-secondary);
+  outline: none; cursor: pointer;
+}
+.slider-input::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px var(--accent-dim);
+  cursor: pointer;
+  transition: box-shadow 0.2s;
+}
+.slider-input::-webkit-slider-thumb:hover {
+  box-shadow: 0 0 18px var(--accent-glow);
+}
+.slider-input::-moz-range-thumb {
+  width: 16px; height: 16px; border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px var(--accent-dim);
+  cursor: pointer;
+}
+.slider-value {
+  font-family: var(--font-mono);
+  font-size: 12px; color: var(--accent);
+  min-width: 36px; text-align: right;
+}
+
+/* ============================================================
+   DEVICE OVERVIEW & RING CHARTS
+   ============================================================ */
+.overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+@media (max-width: 800px) { .overview-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .overview-grid { grid-template-columns: 1fr; } }
+
+.overview-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  text-align: center;
+  transition: all 0.4s;
+  position: relative; overflow: hidden;
+}
+.overview-card::before {
+  content: ''; position: absolute; top: 0; left: 20px; right: 20px; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--accent-glow), transparent);
+  opacity: 0.3;
+}
+.overview-card:hover { border-color: var(--border-accent); transform: translateY(-3px); box-shadow: var(--shadow-accent); }
+.overview-card-label {
+  font-size: 12px; color: var(--text-secondary);
+  font-weight: 600; letter-spacing: 0.5px;
+}
+
+.ring-chart-wrap {
+  width: 120px; height: 120px;
+  margin: 0 auto 12px;
+  position: relative;
+}
+.ring-chart-wrap canvas { width: 100% !important; height: 100% !important; }
+.ring-center {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.ring-center-value {
+  font-family: var(--font-mono);
+  font-size: 28px; font-weight: 700;
+  line-height: 1;
+}
+.ring-center-label {
+  font-size: 10px; color: var(--text-dim);
+  margin-top: 4px; text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.overview-stat-row {
+  display: flex; justify-content: center; gap: 24px;
+  margin-top: 8px;
+}
+.overview-stat {
+  text-align: center;
+}
+.overview-stat-value {
+  font-family: var(--font-mono);
+  font-size: 20px; font-weight: 700;
+}
+.overview-stat-label {
+  font-size: 10px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   ALARM PAGE
+   ============================================================ */
+.alarm-filters {
+  display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center;
+}
+.alarm-filter-group {
+  display: flex; align-items: center; gap: 6px;
+}
+.alarm-filter-label {
+  font-size: 11px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.alarm-select {
+  padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-size: 12px; font-family: var(--font-main);
+  cursor: pointer; outline: none;
+  transition: border-color 0.3s;
+}
+.alarm-select:focus { border-color: var(--accent); }
+.alarm-select option { background: var(--bg-primary); color: var(--text-primary); }
+
+.alarm-date-input {
+  padding: 7px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  font-size: 12px; font-family: var(--font-mono);
+  outline: none; transition: border-color 0.3s;
+}
+.alarm-date-input:focus { border-color: var(--accent); }
+
+.alarm-search-btn {
+  padding: 7px 18px; border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.3s;
+  font-family: var(--font-main);
+}
+.alarm-search-btn:hover { background: var(--accent); color: var(--bg-deep); }
+
+.alarm-summary {
+  display: flex; gap: 16px; margin-bottom: 20px; flex-wrap: wrap;
+}
+.alarm-summary-item {
+  padding: 10px 18px; border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+}
+.alarm-summary-count {
+  font-family: var(--font-mono);
+  font-size: 22px; font-weight: 700;
+}
+.alarm-summary-label {
+  font-size: 10px; color: var(--text-dim);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.alarm-table-wrap {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  backdrop-filter: blur(16px);
+  margin-bottom: 20px;
+}
+.alarm-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.alarm-table th {
+  text-align: left; padding: 12px 14px;
+  color: var(--text-dim); font-weight: 600;
+  font-size: 10px; text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-glass);
+  white-space: nowrap;
+}
+.alarm-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.02);
+  font-family: var(--font-mono); font-size: 12px;
+  white-space: nowrap; transition: background 0.2s;
+}
+.alarm-table tr:hover td { background: var(--bg-glass); }
+
+.alarm-level-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 6px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.5px;
+}
+.alarm-level-badge.critical { color: var(--danger); background: rgba(255,59,92,0.12); border: 1px solid rgba(255,59,92,0.25); }
+.alarm-level-badge.warning { color: var(--warning); background: rgba(255,170,0,0.12); border: 1px solid rgba(255,170,0,0.25); }
+
+.alarm-status-dot {
+  display: inline-block; width: 6px; height: 6px; border-radius: 50%; margin-right: 5px;
+}
+.alarm-status-dot.active { background: var(--danger); box-shadow: 0 0 6px rgba(255,59,92,0.5); }
+.alarm-status-dot.resolved { background: var(--success); box-shadow: 0 0 6px rgba(0,230,118,0.5); }
+
+/* Pagination */
+.alarm-pagination {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 16px 0;
+}
+.alarm-page-btn {
+  padding: 6px 14px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  font-size: 12px; cursor: pointer;
+  transition: all 0.3s; font-family: var(--font-main);
+}
+.alarm-page-btn:hover { border-color: var(--border-accent); color: var(--text-primary); }
+.alarm-page-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.alarm-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.alarm-page-info {
+  font-size: 11px; color: var(--text-dim);
+  font-family: var(--font-mono);
+}
+
+.alarm-empty {
+  text-align: center; padding: 40px 20px;
+  color: var(--text-dim); font-size: 13px;
+}
+
+/* Ring chart center text */
+.ring-value {
+  font-family: var(--font-mono);
+  font-size: 22px; font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+.ring-unit {
+  font-family: var(--font-mono);
+  font-size: 11px; color: var(--text-dim);
+}
+
+/* Alarm level badge variants */
+.alarm-level-badge.crit { color: var(--danger); background: rgba(255,59,92,0.12); border: 1px solid rgba(255,59,92,0.25); }
+.alarm-level-badge.warn { color: var(--warning); background: rgba(255,170,0,0.12); border: 1px solid rgba(255,170,0,0.25); }
+.alarm-level-badge.pending { color: var(--danger); background: rgba(255,59,92,0.08); border: 1px solid rgba(255,59,92,0.18); }
+.alarm-level-badge.confirmed { color: var(--warning); background: rgba(255,170,0,0.08); border: 1px solid rgba(255,170,0,0.18); }
+.alarm-level-badge.resolved { color: var(--success); background: rgba(0,230,118,0.08); border: 1px solid rgba(0,230,118,0.18); }
+
+/* Alarm action buttons */
+.alarm-action-btn {
+  padding: 4px 12px; border-radius: 6px;
+  border: 1px solid var(--border-accent);
+  background: var(--accent-dim);
+  color: var(--accent); font-size: 11px; font-weight: 600;
+  cursor: pointer; transition: all 0.25s;
+  font-family: var(--font-main);
+}
+.alarm-action-btn:hover { background: var(--accent); color: var(--bg-deep); }
+.alarm-action-btn.resolve {
+  border-color: rgba(0,230,118,0.3); background: rgba(0,230,118,0.08); color: var(--success);
+}
+.alarm-action-btn.resolve:hover { background: var(--success); color: var(--bg-deep); }
+
+/* Pagination buttons */
+.page-btn {
+  padding: 5px 12px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-glass);
+  color: var(--text-secondary);
+  font-size: 12px; cursor: pointer;
+  transition: all 0.3s; font-family: var(--font-main);
+  min-width: 32px;
+}
+.page-btn:hover { border-color: var(--border-accent); color: var(--text-primary); }
+.page-btn.active { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+.page-dots { color: var(--text-dim); font-size: 12px; padding: 0 4px; }
+
+/* ============================================================
+   TREND STATS GAUGES
+   ============================================================ */
+.gauge-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+@media (max-width: 800px) { .gauge-row { grid-template-columns: 1fr; } }
+.gauge-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  backdrop-filter: blur(16px);
+  text-align: center;
+  position: relative; overflow: hidden;
+  transition: all 0.4s;
+}
+.gauge-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+  opacity: 0; transition: opacity 0.3s;
+}
+.gauge-card:hover { border-color: var(--border-accent); transform: translateY(-2px); }
+.gauge-card:hover::after { opacity: 1; }
+.gauge-card.online::after { background: linear-gradient(90deg, var(--success), var(--accent)); }
+.gauge-card.offline::after { background: linear-gradient(90deg, var(--warning), #e67e22); }
+.gauge-card.alarm-rate::after { background: linear-gradient(90deg, var(--danger), #ff6b6b); }
+.gauge-value {
+  font-family: var(--font-mono);
+  font-size: 28px; font-weight: 700;
+  color: var(--accent);
+  line-height: 1.2;
+}
+.gauge-label {
+  font-size: 11px; color: var(--text-secondary);
+  margin-top: 6px; font-weight: 500;
+}
+
+/* ============================================================
+   TREND WARNING PANEL
+   ============================================================ */
+.trend-warning-panel {
+  background: linear-gradient(135deg, rgba(255,170,0,0.08), rgba(255,59,92,0.06));
+  border: 1px solid rgba(255,170,0,0.3);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+  margin-bottom: 8px;
+  position: relative;
+  overflow: hidden;
+  animation: trendPulse 3s ease-in-out infinite;
+}
+@keyframes trendPulse {
+  0%, 100% { border-color: rgba(255,170,0,0.3); }
+  50% { border-color: rgba(255,170,0,0.6); }
+}
+.trend-warning-panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, var(--warning), var(--danger), var(--warning));
+  background-size: 200% 100%;
+  animation: trendBar 2s linear infinite;
+}
+@keyframes trendBar {
+  0% { background-position: 0% 0; }
+  100% { background-position: 200% 0; }
+}
+.trend-warning-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.trend-warning-icon {
+  font-size: 20px; color: var(--warning);
+  animation: iconBlink 1.5s ease-in-out infinite;
+}
+@keyframes iconBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.trend-warning-title {
+  font-size: 15px; font-weight: 700; color: var(--warning);
+  letter-spacing: 0.5px;
+}
+.trend-warning-badge {
+  font-size: 10px; font-weight: 600;
+  background: rgba(255,170,0,0.15);
+  color: var(--warning);
+  padding: 2px 8px; border-radius: 10px;
+  border: 1px solid rgba(255,170,0,0.3);
+}
+.trend-warning-list {
+  display: flex; flex-direction: column; gap: 8px;
+  margin-bottom: 12px;
+}
+.trend-warning-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(0,0,0,0.2);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  border-left: 3px solid var(--warning);
+}
+.trend-warning-item.crit {
+  border-left-color: var(--danger);
+}
+.trend-warn-metric {
+  font-size: 13px; font-weight: 600; color: var(--text-primary);
+}
+.trend-warn-detail {
+  font-size: 12px; color: var(--text-secondary);
+  font-family: var(--font-mono);
+}
+.trend-warn-arrow {
+  color: var(--danger); font-size: 14px; font-weight: 700;
+  margin: 0 6px;
+}
+.trend-warning-footer {
+  font-size: 11px; color: var(--text-secondary);
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,170,0,0.15);
+  line-height: 1.5;
+}
+
+/* ============================================================
+   PREDICTION PAGE STYLES
+   ============================================================ */
+.pred-risk-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px; margin-bottom: 24px;
+}
+.pred-risk-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 18px;
+  border-left: 4px solid var(--accent); position: relative;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.pred-risk-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.pred-risk-card .pred-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+.pred-risk-card .pred-value { font-size: 28px; font-weight: 700; color: var(--text-primary); }
+.pred-risk-card .pred-threshold { font-size: 11px; color: var(--text-dim); margin-top: 2px; }
+.pred-risk-badge {
+  display: inline-block; padding: 3px 10px; border-radius: 12px;
+  font-size: 11px; font-weight: 600; margin-top: 8px; color: #fff;
+}
+.pred-risk-bar { height: 5px; background: var(--bg-secondary); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+.pred-risk-bar-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+.pred-dismiss-btn {
+  position: absolute; top: 10px; right: 10px; background: none; border: 1px solid var(--border);
+  color: var(--text-dim); font-size: 10px; padding: 2px 8px; border-radius: 8px;
+  cursor: pointer; transition: all 0.2s;
+}
+.pred-dismiss-btn:hover { color: var(--accent); border-color: var(--accent); }
+.pred-dismiss-btn.dismissed { color: var(--success); border-color: var(--success); }
+.pred-chart-section {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 20px; margin-bottom: 20px;
+}
+.pred-chart-title { font-size: 15px; color: var(--accent); margin-bottom: 14px; font-weight: 600; }
+.pred-chart-canvas { width: 100%; height: 260px; }
+.pred-summary-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.pred-summary-table th {
+  background: var(--bg-secondary); color: var(--accent); padding: 10px 8px;
+  text-align: left; border-bottom: 2px solid var(--border-accent); font-weight: 600;
+}
+.pred-summary-table td {
+  padding: 10px 8px; border-bottom: 1px solid var(--border); color: var(--text-primary);
+}
+.pred-summary-table tr:hover { background: var(--bg-glass); }
+.pred-periodic-tag {
+  display: inline-block; background: rgba(0,230,118,0.15); color: var(--success);
+  font-size: 10px; padding: 1px 6px; border-radius: 6px; margin-left: 4px;
+}
+.pred-restore-btn {
+  background: none; border: 1px solid var(--warning); color: var(--warning);
+  font-size: 10px; padding: 2px 8px; border-radius: 8px; cursor: pointer;
+  transition: all 0.2s;
+}
+.pred-restore-btn:hover { background: rgba(255,170,0,0.1); }
+.pred-loading { text-align: center; padding: 60px 20px; color: var(--text-secondary); font-size: 14px; }
+.pred-meta-info {
+  display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
+  font-size: 12px; color: var(--text-secondary);
+}
+.pred-meta-info span { color: var(--accent); font-weight: 600; }
+
+/* Threshold config UI */
+.threshold-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px;
+}
+.threshold-row {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--bg-glass); border: 1px solid var(--border-dim);
+  border-radius: 10px; padding: 6px 10px;
+}
+.threshold-row label {
+  font-size: 11px; color: var(--text-secondary); white-space: nowrap; min-width: 80px;
+}
+.threshold-row input {
+  width: 70px; background: rgba(0,0,0,0.3); border: 1px solid var(--border-dim);
+  border-radius: 6px; padding: 4px 6px; color: var(--accent); font-size: 12px;
+  text-align: center; outline: none;
+}
+.threshold-row input:focus { border-color: var(--accent); }
+.threshold-row .unit { font-size: 10px; color: var(--text-dim); }
+.threshold-row .default-hint {
+  font-size: 9px; color: var(--text-dim); margin-left: 2px;
+}
+.threshold-save-btn {
+  background: var(--accent); color: #000; border: none; padding: 7px 20px;
+  border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;
+  transition: all 0.2s;
+}
+.threshold-save-btn:hover { opacity: 0.85; }
+.threshold-reset-btn {
+  background: none; border: 1px solid var(--text-dim); color: var(--text-dim);
+  padding: 7px 16px; border-radius: 8px; font-size: 12px; cursor: pointer;
+  transition: all 0.2s;
+}
+.threshold-reset-btn:hover { border-color: var(--warning); color: var(--warning); }
+
+/* Prediction card enhancements */
+.pred-trend-badge {
+  display: inline-block; font-size: 10px; padding: 1px 8px; border-radius: 8px;
+  margin-top: 4px;
+}
+.pred-confidence-bar {
+  height: 3px; border-radius: 2px; background: rgba(255,255,255,0.08);
+  margin-top: 6px; overflow: hidden;
+}
+.pred-confidence-fill {
+  height: 100%; border-radius: 2px; transition: width 0.5s;
+}
+.pred-detail-row {
+  display: flex; justify-content: space-between; font-size: 10px;
+  color: var(--text-dim); margin-top: 3px;
+}
+</style>
+</head>
+<body>
+
+<!-- Layered background system -->
+<div class="bg-gradient-mesh"></div>
+<div class="bg-orb bg-orb-1"></div>
+<div class="bg-orb bg-orb-2"></div>
+<div class="bg-orb bg-orb-3"></div>
+<div class="bg-grid"></div>
+<canvas id="bgCanvas"></canvas>
+<div class="scanline-overlay"></div>
+<div class="vignette"></div>
+
+<!-- Chart tooltip -->
+<div class="chart-tooltip" id="chartTooltip"></div>
+
+<!-- ========== TOP NAV ========== -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-logo">⚙</div>
+    <div>
+      <div class="nav-title" data-i18n="navTitle">油液智能监测平台</div>
+      <div class="nav-subtitle">MDS-Z4 · 长城100号润滑油</div>
+    </div>
+  </div>
+  <div class="nav-actions">
+    <div class="nav-time" id="navTime">--:--:--</div>
+    <div class="status-pill normal" id="statusPill">
+      <span class="status-dot"></span>
+      <span id="statusLabel" data-i18n="statusNormal">运行正常</span>
+    </div>
+    <button class="nav-btn" id="btnRefresh" title="刷新" onclick="refreshData()">⟳</button>
+    <button class="nav-btn" id="btnSettings" title="设置" onclick="toggleSettings()">⚙</button>
+  </div>
+</nav>
+
+<!-- ========== PAGE: DASHBOARD ========== -->
+<div class="page active" id="pageDashboard">
+  <div class="page-content">
+
+    <!-- Data Cards -->
+    <div class="section-header animate-in">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="realtimeData">实时数据</div>
+      <div class="section-sub" id="dataTimeLabel">--</div>
+    </div>
+    <div class="cards-grid" id="cardsGrid"></div>
+
+    <!-- Trend Warning Panel -->
+    <div class="trend-warning-panel animate-in" id="trendWarningPanel" style="display:none">
+      <div class="trend-warning-header">
+        <span class="trend-warning-icon">&#9888;</span>
+        <span class="trend-warning-title" data-i18n="trendWarnTitle">趋势预警</span>
+        <span class="trend-warning-badge" data-i18n="trendWarnBadge">连续7天上升</span>
+      </div>
+      <div class="trend-warning-list" id="trendWarningList"></div>
+      <div class="trend-warning-footer" data-i18n="trendWarnFooter">指标持续上升可能预示油液劣化加速，建议提前安排换油或检修</div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Charts -->
+    <div class="section-header animate-in">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="trendOverview">趋势概览</div>
+      <div class="section-sub" data-i18n="last7days">近7天</div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-panel animate-in">
+        <div class="chart-header">
+          <div class="chart-title" data-i18n="particleTrend">颗粒度趋势</div>
+          <div class="chart-badge">5 CH</div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartParticle"></canvas></div>
+      </div>
+      <div class="chart-panel animate-in">
+        <div class="chart-header">
+          <div class="chart-title" data-i18n="tempMoistureTrend">温度/水分趋势</div>
+          <div class="chart-badge">DUAL</div>
+        </div>
+        <div class="chart-canvas-wrap"><canvas id="chartTemp"></canvas></div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Table -->
+    <div class="section-header animate-in">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="recentRecords">最近记录</div>
+    </div>
+    <div class="table-panel animate-in">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th data-i18n="thTime">时间</th>
+            <th>L1</th><th>L2</th><th>L3</th><th>L4</th><th>L5</th>
+            <th data-i18n="thTemp">温度℃</th>
+            <th data-i18n="thWater">水含量</th>
+            <th data-i18n="thActivity">水活性</th>
+            <th data-i18n="thStatus">状态</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer-info animate-in">
+      <div class="footer-thresholds">
+        <div class="footer-threshold"><span class="footer-dot w"></span><span data-i18n="threshParticle">颗粒预警≥18</span></div>
+        <div class="footer-threshold"><span class="footer-dot c"></span><span data-i18n="threshParticleCrit">颗粒严重≥25</span></div>
+        <div class="footer-threshold"><span class="footer-dot w"></span><span data-i18n="threshTemp">温度预警≥55℃</span></div>
+        <div class="footer-threshold"><span class="footer-dot w"></span><span data-i18n="threshWater">水含量≥150ppm</span></div>
+      </div>
+      <div id="footerUpdate" data-i18n="lastUpdate">最后更新: --</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ========== PAGE: TREND ========== -->
+<div class="page" id="pageTrend">
+  <div class="page-content">
+    <div class="section-header">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="trendAnalysis">趋势分析</div>
+    </div>
+
+    <!-- Quick range buttons -->
+    <div class="trend-controls">
+      <button class="trend-btn active" data-range="7" onclick="setTrendRange(7, this)" data-i18n="range7d">7天</button>
+      <button class="trend-btn" data-range="14" onclick="setTrendRange(14, this)" data-i18n="range14d">14天</button>
+      <button class="trend-btn" data-range="30" onclick="setTrendRange(30, this)" data-i18n="range30d">30天</button>
+    </div>
+
+    <!-- Advanced controls row -->
+    <div class="trend-advanced-controls">
+      <div class="trend-select-group">
+        <label class="trend-select-label" data-i18n="dataPointLabel">数据指标</label>
+        <select id="trendDataPoint" class="trend-select" onchange="onTrendOptionChange()">
+          <option value="level1">等级1 (&gt;4μm)</option>
+          <option value="level2">等级2 (&gt;6μm)</option>
+          <option value="level3">等级3 (&gt;14μm)</option>
+          <option value="level4">等级4 (&gt;21μm)</option>
+          <option value="level5">等级5 (&gt;38μm)</option>
+          <option value="temperature">温度 (℃)</option>
+          <option value="waterContent">水含量 (ppm)</option>
+          <option value="waterActivity">水活性 (aw)</option>
+          <option value="all_particle" data-i18n-opt="allParticle">全部颗粒度</option>
+          <option value="all" data-i18n-opt="allData">全部指标</option>
+        </select>
+      </div>
+      <div class="trend-select-group">
+        <label class="trend-select-label" data-i18n="algorithmLabel">算法</label>
+        <select id="trendAlgorithm" class="trend-select" onchange="onTrendOptionChange()">
+          <option value="raw" data-i18n-opt="algoRaw">原始数据</option>
+          <option value="avg" data-i18n-opt="algoAvg">平均值</option>
+          <option value="max" data-i18n-opt="algoMax">最大值</option>
+          <option value="min" data-i18n-opt="algoMin">最小值</option>
+          <option value="diff" data-i18n-opt="algoDiff">差值</option>
+          <option value="latest" data-i18n-opt="algoLatest">最新值</option>
+          <option value="earliest" data-i18n-opt="algoEarliest">最早值</option>
+          <option value="sum" data-i18n-opt="algoSum">累计值</option>
+          <option value="count" data-i18n-opt="algoCount">计数</option>
+        </select>
+      </div>
+      <div class="trend-select-group">
+        <label class="trend-select-label" data-i18n="intervalLabel">时间间隔</label>
+        <select id="trendInterval" class="trend-select" onchange="onTrendOptionChange()">
+          <option value="5">5分钟</option>
+          <option value="15">15分钟</option>
+          <option value="30">30分钟</option>
+          <option value="60" selected>1小时</option>
+          <option value="180">3小时</option>
+          <option value="360">6小时</option>
+          <option value="720">12小时</option>
+          <option value="1440">1天</option>
+        </select>
+      </div>
+      <div class="trend-select-group">
+        <label class="trend-select-label" data-i18n="refLinesLabel">参考线</label>
+        <select id="trendRefLines" class="trend-select" onchange="onTrendOptionChange()">
+          <option value="none">无</option>
+          <option value="avg" selected data-i18n-opt="refAvg">平均值线</option>
+          <option value="maxmin" data-i18n-opt="refMaxMin">最大/最小值线</option>
+          <option value="all" data-i18n-opt="refAll">全部(均值+最大+最小)</option>
+          <option value="threshold" data-i18n-opt="refThresh">阈值线</option>
+        </select>
+      </div>
+      <div class="trend-select-group">
+        <label class="trend-select-label" data-i18n="dateRangeLabel">自定义日期</label>
+        <div class="trend-date-range">
+          <input type="date" id="trendStartDate" class="trend-date-input" onchange="onTrendOptionChange()">
+          <span class="trend-date-sep">~</span>
+          <input type="date" id="trendEndDate" class="trend-date-input" onchange="onTrendOptionChange()">
+        </div>
+      </div>
+      <div class="trend-select-group">
+        <button class="trend-fetch-btn" onclick="fetchTrendHistory()" data-i18n="fetchHistory">查询历史数据</button>
+      </div>
+    </div>
+
+    <div class="trend-stats" id="trendStats"></div>
+
+    <!-- Dynamic chart area -->
+    <div class="trend-chart-panel">
+      <div class="chart-header">
+        <div class="chart-title" id="trendChartTitle" data-i18n="particleFullTrend">颗粒度完整趋势</div>
+        <div class="chart-info" id="trendChartInfo"></div>
+      </div>
+      <div class="chart-canvas-wrap"><canvas id="trendMainChart"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: ALARMS ========== -->
+<div class="page" id="pageAlarms">
+  <div class="page-content">
+    <div class="section-header animate-in">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="alarmTitle">报警记录查询</div>
+    </div>
+
+    <!-- Device Overview Gauges -->
+    <div class="overview-grid animate-in" id="overviewGrid">
+      <div class="overview-card">
+        <div class="ring-chart-wrap">
+          <canvas id="ringOnline" width="120" height="120"></canvas>
+          <div class="ring-center">
+            <span class="ring-value" id="valOnline">--</span>
+            <span class="ring-unit">%</span>
+          </div>
+        </div>
+        <div class="overview-card-label" data-i18n="onlineRate">在线率</div>
+      </div>
+      <div class="overview-card">
+        <div class="ring-chart-wrap">
+          <canvas id="ringOffline" width="120" height="120"></canvas>
+          <div class="ring-center">
+            <span class="ring-value" id="valOffline">--</span>
+            <span class="ring-unit">%</span>
+          </div>
+        </div>
+        <div class="overview-card-label" data-i18n="offlineRate">离线率</div>
+      </div>
+      <div class="overview-card">
+        <div class="ring-chart-wrap">
+          <canvas id="ringAlarm" width="120" height="120"></canvas>
+          <div class="ring-center">
+            <span class="ring-value" id="valAlarm">--</span>
+            <span class="ring-unit">%</span>
+          </div>
+        </div>
+        <div class="overview-card-label" data-i18n="alarmRate">报警率</div>
+      </div>
+      <div class="overview-card">
+        <div class="ring-chart-wrap">
+          <canvas id="ringHealth" width="120" height="120"></canvas>
+          <div class="ring-center">
+            <span class="ring-value" id="valHealth">--</span>
+            <span class="ring-unit">%</span>
+          </div>
+        </div>
+        <div class="overview-card-label" data-i18n="healthRate">健康率</div>
+      </div>
+    </div>
+
+    <div class="glow-divider"></div>
+
+    <!-- Alarm Filters -->
+    <div class="alarm-filters animate-in">
+      <select class="alarm-select" id="alarmFilterType" onchange="filterAlarms()">
+        <option value="all" data-i18n-opt="filterAllType">全部类型</option>
+        <option value="particle" data-i18n-opt="filterParticle">颗粒度</option>
+        <option value="temperature" data-i18n-opt="filterTemp">温度</option>
+        <option value="water" data-i18n-opt="filterWater">水分</option>
+      </select>
+      <select class="alarm-select" id="alarmFilterLevel" onchange="filterAlarms()">
+        <option value="all" data-i18n-opt="filterAllLevel">全部级别</option>
+        <option value="1" data-i18n-opt="filterWarn">预警</option>
+        <option value="2" data-i18n-opt="filterCrit">严重</option>
+      </select>
+      <select class="alarm-select" id="alarmFilterStatus" onchange="filterAlarms()">
+        <option value="all" data-i18n-opt="filterAllStatus">全部状态</option>
+        <option value="pending" data-i18n-opt="filterPending">待处理</option>
+        <option value="confirmed" data-i18n-opt="filterConfirmed">已确认</option>
+        <option value="resolved" data-i18n-opt="filterResolved">已解决</option>
+      </select>
+      <select class="alarm-select" id="alarmFilterRange" onchange="filterAlarms()">
+        <option value="7" data-i18n-opt="range7d">近7天</option>
+        <option value="14" data-i18n-opt="range14d">近14天</option>
+        <option value="30" data-i18n-opt="range30d">近30天</option>
+      </select>
+    </div>
+
+    <!-- Alarm Summary -->
+    <div class="gauge-row animate-in" id="alarmSummary">
+      <div class="gauge-card">
+        <div class="gauge-value" id="alarmTotal">0</div>
+        <div class="gauge-label" data-i18n="alarmTotal">总报警</div>
+      </div>
+      <div class="gauge-card">
+        <div class="gauge-value" style="color:var(--warning)" id="alarmWarnCount">0</div>
+        <div class="gauge-label" data-i18n="alarmWarn">预警次数</div>
+      </div>
+      <div class="gauge-card">
+        <div class="gauge-value" style="color:var(--danger)" id="alarmCritCount">0</div>
+        <div class="gauge-label" data-i18n="alarmCrit">严重次数</div>
+      </div>
+      <div class="gauge-card">
+        <div class="gauge-value" style="color:var(--success)" id="alarmResolvedCount">0</div>
+        <div class="gauge-label" data-i18n="alarmResolved">已解决</div>
+      </div>
+    </div>
+
+    <!-- Alarm Table -->
+    <div class="alarm-table-wrap animate-in">
+      <table class="alarm-table">
+        <thead>
+          <tr>
+            <th data-i18n="alarmThTime">时间</th>
+            <th data-i18n="alarmThType">类型</th>
+            <th data-i18n="alarmThLevel">级别</th>
+            <th data-i18n="alarmThValue">数值</th>
+            <th data-i18n="alarmThStatus">状态</th>
+            <th data-i18n="alarmThAction">操作</th>
+          </tr>
+        </thead>
+        <tbody id="alarmTableBody"></tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="alarm-pagination" id="alarmPagination"></div>
+  </div>
+</div>
+
+<!-- ========== PAGE: SETTINGS ========== -->
+<div class="page" id="pageSettings">
+  <div class="page-content">
+    <div class="section-header">
+      <div class="section-line"></div>
+      <div class="section-title" data-i18n="settingsTitle">系统设置</div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="themeStyle">主题风格</div>
+      <div class="theme-grid" id="themeGrid">
+        <div class="theme-option active" data-theme="default" onclick="applyTheme('default')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#111a2e,#00d4ff)"></div>
+          <div class="theme-option-name" data-i18n="themeTech">科技蓝</div>
+        </div>
+        <div class="theme-option" data-theme="cyberpunk" onclick="applyTheme('cyberpunk')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#180a35,#ff00e5)"></div>
+          <div class="theme-option-name" data-i18n="themeCyber">赛博朋克</div>
+        </div>
+        <div class="theme-option" data-theme="matrix" onclick="applyTheme('matrix')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#071a07,#00ff41)"></div>
+          <div class="theme-option-name" data-i18n="themeMatrix">矩阵绿</div>
+        </div>
+        <div class="theme-option" data-theme="deepblue" onclick="applyTheme('deepblue')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#0a1838,#4488ff)"></div>
+          <div class="theme-option-name" data-i18n="themeDeep">深空蓝</div>
+        </div>
+        <div class="theme-option" data-theme="flame" onclick="applyTheme('flame')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#201005,#ff6600)"></div>
+          <div class="theme-option-name" data-i18n="themeFlame">赤焰红</div>
+        </div>
+        <div class="theme-option" data-theme="aurora" onclick="applyTheme('aurora')">
+          <div class="theme-swatch" style="background:linear-gradient(135deg,#082820,#00e676)"></div>
+          <div class="theme-option-name" data-i18n="themeAurora">极光绿</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="language">语言</div>
+      <div class="lang-options">
+        <div class="lang-option active" data-lang="zh" onclick="applyLang('zh')">中文</div>
+        <div class="lang-option" data-lang="en" onclick="applyLang('en')">English</div>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="display">显示</div>
+      <div class="settings-item">
+        <span class="settings-item-label" data-i18n="particleBg">粒子背景动画</span>
+        <div class="toggle-switch on" id="toggleParticles" onclick="toggleParticles()"></div>
+      </div>
+      <div class="settings-item">
+        <span class="settings-item-label" data-i18n="oilAnim">油液晃动动画</span>
+        <div class="toggle-switch on" id="toggleOil" onclick="toggleOilAnim()"></div>
+      </div>
+      <div class="settings-item">
+        <span class="settings-item-label" data-i18n="boilAnim">沸腾冒气动画</span>
+        <div class="toggle-switch on" id="toggleBoil" onclick="toggleBoilAnim()"></div>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label" data-i18n="brightness">亮度</span>
+        <input type="range" class="slider-input" id="sliderBrightness" min="50" max="150" value="100" oninput="applyBrightness(this.value)">
+        <span class="slider-value" id="valBrightness">100%</span>
+      </div>
+      <div class="slider-row">
+        <span class="slider-label" data-i18n="contrast">对比度</span>
+        <input type="range" class="slider-input" id="sliderContrast" min="50" max="150" value="100" oninput="applyContrast(this.value)">
+        <span class="slider-value" id="valContrast">100%</span>
+      </div>
+    </div>
+
+    <!-- 指标阈值配置 -->
+    <div class="settings-group">
+      <div class="settings-group-title">指标阈值设定</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-bottom:10px;">修改后预测分析和报警推送将使用新阈值实时重新计算</div>
+
+      <div style="font-size:12px;color:var(--accent);margin:8px 0 6px;font-weight:600;">预测超标阈值</div>
+      <div class="threshold-grid" id="thresholdPredGrid">
+        <!-- JS动态填充 -->
+      </div>
+
+      <div style="font-size:12px;color:var(--accent);margin:12px 0 6px;font-weight:600;">报警触发阈值</div>
+      <div class="threshold-grid" id="thresholdAlarmGrid">
+        <!-- JS动态填充 -->
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button class="threshold-save-btn" onclick="saveThresholdConfig()">保存阈值</button>
+        <button class="threshold-reset-btn" onclick="resetThresholds()">恢复默认</button>
+      </div>
+      <div id="thresholdMsg" style="font-size:11px;margin-top:6px;color:var(--accent);display:none;"></div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-group-title" data-i18n="about">关于</div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.8;">
+        <div data-i18n="aboutText">冲压车间压机润滑油智能监测系统 v2.0</div>
+        <div>MDS-Z4 颗粒计数器 · RS485/ModBus RTU</div>
+        <div data-i18n="aboutOil">长城100号润滑油 · ISO 4406标准</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== PAGE: PREDICTION ========== -->
+<div class="page" id="pagePrediction">
+  <div class="page-content">
+    <div class="section-header">
+      <div class="section-line"></div>
+      <div class="section-title">AI智能预警（随机森林）</div>
+      <button onclick="fetchRFPrediction()" style="margin-left:auto;background:var(--accent-dim);border:1px solid var(--border-accent);color:var(--accent);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;">刷新预测</button>
+      <button onclick="trainRFModel()" style="margin-left:8px;background:#2d1f5e;border:1px solid #6c47ff;color:#b794ff;padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;">重新训练</button>
+    </div>
+    <div id="rfPredMeta" style="font-size:11px;color:var(--text-dim);margin-bottom:12px;"></div>
+    <div id="rfPredContent"><div class="pred-loading">正在加载AI预测...</div></div>
+
+    <div class="section-header" style="margin-top:32px;">
+      <div class="section-line"></div>
+      <div class="section-title">趋势预测分析（统计模型）</div>
+      <button onclick="fetchPredictionData()" style="margin-left:auto;background:var(--accent-dim);border:1px solid var(--border-accent);color:var(--accent);padding:6px 16px;border-radius:8px;cursor:pointer;font-size:12px;">刷新分析</button>
+    </div>
+    <div class="pred-meta-info" id="predMetaInfo"></div>
+    <div id="predContent"><div class="pred-loading">正在加载预测数据...</div></div>
+  </div>
+</div>
+
+<!-- ========== SETTINGS OVERLAY ========== -->
+<div class="settings-overlay" id="settingsOverlay" onclick="toggleSettings()"></div>
+
+<!-- ========== BOTTOM TAB BAR ========== -->
+<div class="tab-bar">
+  <div class="tab-item active" data-page="pageDashboard" onclick="switchPage('pageDashboard', this)">
+    <span class="tab-icon">◉</span>
+    <span class="tab-label" data-i18n="tabDashboard">监控台</span>
+  </div>
+  <div class="tab-item" data-page="pageTrend" onclick="switchPage('pageTrend', this)">
+    <span class="tab-icon">◈</span>
+    <span class="tab-label" data-i18n="tabTrend">趋势</span>
+  </div>
+  <div class="tab-item" data-page="pageAlarms" onclick="switchPage('pageAlarms', this)">
+    <span class="tab-icon">⚠</span>
+    <span class="tab-label" data-i18n="tabAlarms">报警</span>
+  </div>
+  <div class="tab-item" data-page="pagePrediction" onclick="switchPage('pagePrediction', this)">
+    <span class="tab-icon">📈</span>
+    <span class="tab-label">预测</span>
+  </div>
+  <div class="tab-item" data-page="pageSettings" onclick="switchPage('pageSettings', this)">
+    <span class="tab-icon">⚙</span>
+    <span class="tab-label" data-i18n="tabSettings">设置</span>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG & STATE
+// ============================================================
+// 自适应API地址：本地调试走本地服务器代理，线上走Railway
+const _apiBase = (function() {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host === '') {
+    return '/api/v1'; // 本地调试，通过Python服务器代理到MDS
+  }
+  return 'https://oil-monitor-platform-production.up.railway.app/api/v1'; // 线上环境
+})();
+
+const CFG = {
+  apiBase: _apiBase,
+  username: 'mds26061103', password: '123456', deviceId: 56857,
+  thresholds: {
+    particle: { warning: 18, critical: 25 },
+    temperature: { low: 10, highWarn: 55, highCritical: 65 },
+    waterContent: { warning: 150, critical: 300 },
+    waterActivity: { warning: 0.7, critical: 0.85 }
+  }
+};
+
+let state = {
+  currentData: null,
+  historyData: [],
+  token: null,
+  theme: 'default',
+  lang: 'zh',
+  particlesEnabled: true,
+  oilAnimEnabled: true,
+  boilAnimEnabled: true,
+  trendRange: 7,
+  brightness: 100,
+  contrast: 100,
+  // Trend history data from /api/history
+  trendHistory: null, // { labels, values, stats, dataPoint, algorithm, interval }
+  trendAnimProgress: 0,
+  trendAnimId: null,
+  // Prediction analysis data
+  predictionData: null,
+  rfPrediction: null
+};
+
+// ============================================================
+// I18N
+// ============================================================
+const I18N = {
+  zh: {
+    navTitle: '油液智能监测平台', statusNormal: '运行正常', statusWarning: '预警提醒', statusCritical: '严重报警',
+    realtimeData: '实时数据', trendOverview: '趋势概览', last7days: '近7天',
+    particleTrend: '颗粒度趋势', tempMoistureTrend: '温度/水分趋势',
+    recentRecords: '最近记录', thTime: '时间', thTemp: '温度℃', thWater: '水含量', thActivity: '水活性', thStatus: '状态',
+    threshParticle: '颗粒预警≥18', threshParticleCrit: '颗粒严重≥25', threshTemp: '温度预警≥55℃', threshWater: '水含量≥150ppm',
+    lastUpdate: '最后更新: --', trendAnalysis: '趋势分析',
+    range7d: '7天', range14d: '14天', range30d: '30天',
+    particleFullTrend: '颗粒度完整趋势', tempFullTrend: '温度/水分完整趋势',
+    settingsTitle: '系统设置', themeStyle: '主题风格', language: '语言', display: '显示',
+    particleBg: '粒子背景动画', oilAnim: '油液晃动动画', boilAnim: '沸腾冒气动画',
+    themeTech: '科技蓝', themeCyber: '赛博朋克', themeMatrix: '矩阵绿',
+    themeDeep: '深空蓝', themeFlame: '赤焰红', themeAurora: '极光绿',
+    about: '关于', aboutText: '冲压车间压机润滑油智能监测系统 v2.0', aboutOil: '长城100号润滑油 · ISO 4406标准',
+    tabDashboard: '监控台', tabTrend: '趋势', tabSettings: '设置',
+    statusGood: '正常', statusWarn: '预警', statusBad: '严重',
+    cardL1: '等级1 (>4um)', cardL2: '等级2 (>6um)', cardL3: '等级3 (>14um)',
+    cardL4: '等级4 (>21um)', cardL5: '等级5 (>38um)', cardTemp: '油温', cardWater: '水含量', cardActivity: '水活性',
+    unitPc: '个/mL', unitC: '℃', unitPpm: 'ppm', unitAw: 'aw',
+    noData: '暂无数据', coverageDays: '覆盖天数', alarmCount: '报警次数',
+    avgL1: 'L1均值', tempRange: '温度范围', avgWater: '水含量均值',
+    brightness: '亮度', contrast: '对比度',
+    tabAlarms: '报警',
+    alarmTitle: '报警记录查询',
+    onlineRate: '在线率', offlineRate: '离线率', alarmRate: '报警率', healthRate: '健康率',
+    filterAllType: '全部类型', filterParticle: '颗粒度', filterTemp: '温度', filterWater: '水分',
+    filterAllLevel: '全部级别', filterWarn: '预警', filterCrit: '严重',
+    filterAllStatus: '全部状态', filterPending: '待处理', filterConfirmed: '已确认', filterResolved: '已解决',
+    alarmTotal: '总报警', alarmWarn: '预警次数', alarmCrit: '严重次数', alarmResolved: '已解决',
+    alarmThTime: '时间', alarmThType: '类型', alarmThLevel: '级别', alarmThValue: '数值', alarmThStatus: '状态', alarmThAction: '操作',
+    alarmConfirm: '确认', alarmResolve: '解决',
+    alarmTypeParticle: '颗粒度', alarmTypeTemp: '温度', alarmTypeWater: '水分',
+    alarmLevelWarn: '预警', alarmLevelCrit: '严重',
+    alarmStatusPending: '待处理', alarmStatusConfirmed: '已确认', alarmStatusResolved: '已解决',
+    deviceStatus: '设备状态', deviceOnline: '在线', deviceOffline: '离线', deviceAlarm: '报警中', deviceHealth: '健康',
+    trendWarnTitle: '趋势预警', trendWarnBadge: '连续7天上升', trendWarnFooter: '指标持续上升可能预示油液劣化加速，建议提前安排换油或检修',
+    dataPointLabel: '数据指标', algorithmLabel: '算法', intervalLabel: '时间间隔', refLinesLabel: '参考线', dateRangeLabel: '自定义日期', fetchHistory: '查询历史数据',
+    allParticle: '全部颗粒度', allData: '全部指标',
+    algoRaw: '原始数据', algoAvg: '平均值', algoMax: '最大值', algoMin: '最小值', algoDiff: '差值', algoLatest: '最新值', algoEarliest: '最早值', algoSum: '累计值', algoCount: '计数',
+    refAvg: '平均值线', refMaxMin: '最大/最小值线', refAll: '全部(均值+最大+最小)', refThresh: '阈值线',
+    chartDataCount: '数据点', chartAvg: '均值', chartMax: '最大', chartMin: '最小', chartLoading: '加载中...', chartNoData: '暂无数据，请点击查询'
+  },
+  en: {
+    navTitle: 'Oil Intelligence Monitor', statusNormal: 'Normal', statusWarning: 'Warning', statusCritical: 'Critical',
+    realtimeData: 'Real-time Data', trendOverview: 'Trend Overview', last7days: 'Last 7 Days',
+    particleTrend: 'Particle Trend', tempMoistureTrend: 'Temp / Moisture Trend',
+    recentRecords: 'Recent Records', thTime: 'Time', thTemp: 'Temp ℃', thWater: 'Water ppm', thActivity: 'Activity aw', thStatus: 'Status',
+    threshParticle: 'Particle Warn≥18', threshParticleCrit: 'Particle Crit≥25', threshTemp: 'Temp Warn≥55℃', threshWater: 'Water≥150ppm',
+    lastUpdate: 'Last update: --', trendAnalysis: 'Trend Analysis',
+    range7d: '7 Days', range14d: '14 Days', range30d: '30 Days',
+    particleFullTrend: 'Particle Full Trend', tempFullTrend: 'Temp / Moisture Full Trend',
+    settingsTitle: 'Settings', themeStyle: 'Theme', language: 'Language', display: 'Display',
+    particleBg: 'Particle Background', oilAnim: 'Oil Slosh Animation', boilAnim: 'Boiling Steam Animation',
+    themeTech: 'Tech Blue', themeCyber: 'Cyberpunk', themeMatrix: 'Matrix',
+    themeDeep: 'Deep Blue', themeFlame: 'Flame', themeAurora: 'Aurora',
+    about: 'About', aboutText: 'Press Oil Smart Monitoring System v2.0', aboutOil: 'Great Wall 100# Oil · ISO 4406',
+    tabDashboard: 'Dashboard', tabTrend: 'Trend', tabSettings: 'Settings',
+    statusGood: 'Normal', statusWarn: 'Warning', statusBad: 'Critical',
+    cardL1: 'Level 1 (>4um)', cardL2: 'Level 2 (>6um)', cardL3: 'Level 3 (>14um)',
+    cardL4: 'Level 4 (>21um)', cardL5: 'Level 5 (>38um)', cardTemp: 'Oil Temp', cardWater: 'Water Content', cardActivity: 'Water Activity',
+    unitPc: 'pcs/mL', unitC: '℃', unitPpm: 'ppm', unitAw: 'aw',
+    noData: 'No Data', coverageDays: 'Days', alarmCount: 'Alarms',
+    avgL1: 'L1 Avg', tempRange: 'Temp Range', avgWater: 'Water Avg',
+    brightness: 'Brightness', contrast: 'Contrast',
+    tabAlarms: 'Alarms',
+    alarmTitle: 'Alarm Records',
+    onlineRate: 'Online Rate', offlineRate: 'Offline Rate', alarmRate: 'Alarm Rate', healthRate: 'Health Rate',
+    filterAllType: 'All Types', filterParticle: 'Particle', filterTemp: 'Temperature', filterWater: 'Moisture',
+    filterAllLevel: 'All Levels', filterWarn: 'Warning', filterCrit: 'Critical',
+    filterAllStatus: 'All Status', filterPending: 'Pending', filterConfirmed: 'Confirmed', filterResolved: 'Resolved',
+    alarmTotal: 'Total Alarms', alarmWarn: 'Warnings', alarmCrit: 'Critical', alarmResolved: 'Resolved',
+    alarmThTime: 'Time', alarmThType: 'Type', alarmThLevel: 'Level', alarmThValue: 'Value', alarmThStatus: 'Status', alarmThAction: 'Action',
+    alarmConfirm: 'Confirm', alarmResolve: 'Resolve',
+    alarmTypeParticle: 'Particle', alarmTypeTemp: 'Temperature', alarmTypeWater: 'Moisture',
+    alarmLevelWarn: 'Warning', alarmLevelCrit: 'Critical',
+    alarmStatusPending: 'Pending', alarmStatusConfirmed: 'Confirmed', alarmStatusResolved: 'Resolved',
+    deviceStatus: 'Device Status', deviceOnline: 'Online', deviceOffline: 'Offline', deviceAlarm: 'Alarming', deviceHealth: 'Healthy',
+    trendWarnTitle: 'Trend Warning', trendWarnBadge: '7-day rising', trendWarnFooter: 'Sustained rising trends may indicate accelerated oil degradation. Consider scheduling oil change or maintenance.',
+    dataPointLabel: 'Data Point', algorithmLabel: 'Algorithm', intervalLabel: 'Interval', refLinesLabel: 'Ref. Lines', dateRangeLabel: 'Date Range', fetchHistory: 'Query History',
+    allParticle: 'All Particle', allData: 'All Metrics',
+    algoRaw: 'Raw', algoAvg: 'Average', algoMax: 'Maximum', algoMin: 'Minimum', algoDiff: 'Difference', algoLatest: 'Latest', algoEarliest: 'Earliest', algoSum: 'Sum', algoCount: 'Count',
+    refAvg: 'Average Line', refMaxMin: 'Max/Min Lines', refAll: 'All (Avg+Max+Min)', refThresh: 'Threshold Lines',
+    chartDataCount: 'Points', chartAvg: 'Avg', chartMax: 'Max', chartMin: 'Min', chartLoading: 'Loading...', chartNoData: 'No data, click Query to load'
+  }
+};
+
+function t(key) { return I18N[state.lang]?.[key] || I18N.zh[key] || key; }
+
+function applyI18n() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    const val = t(key);
+    if (val) el.textContent = val;
+  });
+  // Handle select option translations
+  document.querySelectorAll('[data-i18n-opt]').forEach(el => {
+    const key = el.getAttribute('data-i18n-opt');
+    const val = t(key);
+    if (val) el.textContent = val;
+  });
+  document.documentElement.setAttribute('data-lang', state.lang);
+}
+
+// ============================================================
+// API
+// ============================================================
+async function apiLogin() {
+  try {
+    const r = await fetch(`${CFG.apiBase}/login/login`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: CFG.username, password: CFG.password })
+    });
+    const d = await r.json();
+    if (d.code === 0) { state.token = d.data.token; return true; }
+  } catch(e) {}
+  return false;
+}
+
+async function apiFetchLatest() {
+  try {
+    const r = await fetch(`${API_BASE_URL}/api/latest`);
+    const d = await r.json();
+    if (d.code === 0 && d.data) {
+      return d.data;
+    }
+    return null;
+  } catch(e) {
+    console.error('[apiFetchLatest] Error:', e);
+    return null;
+  }
+}
+
+// ============================================================
+// ALARM CHECK
+// ============================================================
+function checkAlarm(d) {
+  let level = 0; const msgs = [];
+  if (d.level1 === -1 || d.level1 == null) return { level: 0, msgs: [] };
+  const T = CFG.thresholds;
+  ['level1','level2','level3','level4','level5'].forEach(k => {
+    const v = d[k]; if (v == null || v < 0) return;
+    if (v >= T.particle.critical) { level = Math.max(level,2); msgs.push(`${k}=${v}`); }
+    else if (v >= T.particle.warning) { level = Math.max(level,1); }
+  });
+  if (d.temperature != null) {
+    if (d.temperature >= T.temperature.highCritical) level = Math.max(level,2);
+    else if (d.temperature >= T.temperature.highWarn) level = Math.max(level,1);
+  }
+  if (d.waterContent != null && d.waterContent >= T.waterContent.warning) level = Math.max(level,1);
+  if (d.waterActivity != null && d.waterActivity >= T.waterActivity.warning) level = Math.max(level,1);
+  return { level, msgs };
+}
+
+// ============================================================
+// WEEKLY TREND CHECK (连续7天上升趋势检测)
+// ============================================================
+function checkWeeklyTrend() {
+  const hist = state.historyData;
+  if (hist.length < 5) return null;
+
+  // 按天分组，取每天最后一条记录
+  const daily = {};
+  hist.forEach(r => {
+    const day = (r.timestamp || '').substring(0, 10);
+    if (day) daily[day] = r;
+  });
+  const sortedDays = Object.keys(daily).sort().slice(-7);
+  if (sortedDays.length < 5) return null;
+
+  const metrics = {
+    level1: { name: '颗粒度 L1(>4um)', unit: '个/mL', fmt: 1 },
+    level2: { name: '颗粒度 L2(>6um)', unit: '个/mL', fmt: 1 },
+    level3: { name: '颗粒度 L3(>14um)', unit: '个/mL', fmt: 1 },
+    level4: { name: '颗粒度 L4(>21um)', unit: '个/mL', fmt: 1 },
+    level5: { name: '颗粒度 L5(>38um)', unit: '个/mL', fmt: 1 },
+    temperature: { name: '温度', unit: '℃', fmt: 1 },
+    waterContent: { name: '水含量', unit: 'ppm', fmt: 1 },
+    waterActivity: { name: '水活性', unit: 'aw', fmt: 3 }
+  };
+
+  const trendItems = [];
+  for (const [key, info] of Object.entries(metrics)) {
+    const values = sortedDays.map(d => parseFloat(daily[d][key]) || 0);
+    const nonZero = values.filter(v => v > 0);
+    if (nonZero.length < 3) continue;
+    // 检查是否连续上升
+    let allRising = true;
+    for (let i = 1; i < values.length; i++) {
+      if (values[i] <= values[i - 1]) { allRising = false; break; }
+    }
+    if (allRising) {
+      const first = values[0].toFixed(info.fmt);
+      const last = values[values.length - 1].toFixed(info.fmt);
+      trendItems.push({
+        name: info.name, unit: info.unit,
+        days: values.length, first, last,
+        key
+      });
+    }
+  }
+  return trendItems.length > 0 ? trendItems : null;
+}
+
+function renderTrendWarning() {
+  const panel = document.getElementById('trendWarningPanel');
+  const list = document.getElementById('trendWarningList');
+  const trends = checkWeeklyTrend();
+
+  if (!trends) {
+    panel.style.display = 'none';
+    return;
+  }
+
+  panel.style.display = 'block';
+  list.innerHTML = trends.map(item => {
+    const isCrit = item.key.startsWith('level') && parseFloat(item.last) >= CFG.thresholds.particle.warning;
+    return `<div class="trend-warning-item ${isCrit ? 'crit' : ''}">
+      <span class="trend-warn-metric">${item.name}</span>
+      <span class="trend-warn-detail">
+        ${item.first}<span class="trend-warn-arrow">&rarr;</span>${item.last} ${item.unit}
+        &nbsp;(${item.days}天连续上升)
+      </span>
+    </div>`;
+  }).join('');
+}
+
+// ============================================================
+// RENDER: OIL CARDS
+// ============================================================
+function renderCards(data) {
+  const grid = document.getElementById('cardsGrid');
+  const T = CFG.thresholds;
+  const items = [
+    { label: t('cardL1'), value: data.level1, unit: t('unitPc'), key: 'level1', threshold: T.particle.warning, critThreshold: T.particle.critical, isParticle: true, particleLevel: 1 },
+    { label: t('cardL2'), value: data.level2, unit: t('unitPc'), key: 'level2', threshold: T.particle.warning, critThreshold: T.particle.critical, isParticle: true, particleLevel: 2 },
+    { label: t('cardL3'), value: data.level3, unit: t('unitPc'), key: 'level3', threshold: T.particle.warning, critThreshold: T.particle.critical, isParticle: true, particleLevel: 3 },
+    { label: t('cardL4'), value: data.level4, unit: t('unitPc'), key: 'level4', threshold: T.particle.warning, critThreshold: T.particle.critical, isParticle: true, particleLevel: 4 },
+    { label: t('cardL5'), value: data.level5, unit: t('unitPc'), key: 'level5', threshold: T.particle.warning, critThreshold: T.particle.critical, isParticle: true, particleLevel: 5 },
+    { label: t('cardTemp'), value: data.temperature, unit: t('unitC'), key: 'temperature', threshold: T.temperature.highWarn, critThreshold: T.temperature.highCritical, isTemp: true },
+    { label: t('cardWater'), value: data.waterContent, unit: t('unitPpm'), key: 'waterContent', threshold: T.waterContent.warning, critThreshold: T.waterContent.critical },
+    { label: t('cardActivity'), value: data.waterActivity, unit: t('unitAw'), key: 'waterActivity', threshold: T.waterActivity.warning, critThreshold: T.waterActivity.critical },
+  ];
+
+  grid.innerHTML = items.map((item, idx) => {
+    const val = item.value != null ? item.value : '--';
+    let status = 'good', statusText = t('statusGood');
+    if (typeof val === 'number') {
+      if (val >= item.critThreshold) { status = 'bad'; statusText = t('statusBad'); }
+      else if (val >= item.threshold) { status = 'warn'; statusText = t('statusWarn'); }
+    }
+
+    const fillPercent = typeof val === 'number' ? Math.min((val / (item.critThreshold * 1.3)) * 100, 90) : 30;
+
+    // --- Determine colors per card type ---
+    let glowColor, liquidTop, liquidBottom;
+    if (item.isTemp && typeof val === 'number') {
+      // Temperature: blue(20°C) → orange(50°C) → red(70°C+)
+      const tempRatio = Math.max(0, Math.min(1, (val - 20) / 50));
+      const r = Math.round(0 + tempRatio * 255);
+      const g = Math.round(150 - tempRatio * 120);
+      const b = Math.round(255 - tempRatio * 230);
+      liquidTop = `rgba(${r},${g},${b},0.3)`;
+      liquidBottom = `rgba(${r},${g},${b},0.55)`;
+      glowColor = `rgba(${r},${g},${b},0.12)`;
+    } else if (item.isParticle) {
+      liquidTop = 'rgba(0,180,220,0.2)';
+      liquidBottom = 'rgba(0,120,180,0.4)';
+      glowColor = 'rgba(0,180,220,0.1)';
+    } else if (item.key === 'waterContent') {
+      liquidTop = 'rgba(0,200,180,0.2)';
+      liquidBottom = 'rgba(0,150,140,0.4)';
+      glowColor = 'rgba(0,200,180,0.1)';
+    } else {
+      liquidTop = 'rgba(100,180,255,0.2)';
+      liquidBottom = 'rgba(60,130,220,0.4)';
+      glowColor = 'rgba(100,180,255,0.1)';
+    }
+
+    // --- Card class modifiers ---
+    let cardClass = 'oil-card';
+    if (item.isTemp) cardClass += ' temp-bottle';
+    if (item.isTemp && typeof val === 'number' && val >= 55) cardClass += ' boiling';
+
+    // --- Particle field (for particle level indicators) ---
+    let particleHtml = '';
+    if (item.isParticle && state.oilAnimEnabled) {
+      // Particle size scales with level: L1=small, L5=large
+      const sizeRanges = { 1: [2,3.5], 2: [3,4.5], 3: [4,5.5], 4: [5,7], 5: [7,10] };
+      const [minSz, maxSz] = sizeRanges[item.particleLevel] || [3, 5];
+      const particleCount = 12;
+      let particles = '';
+      for (let i = 0; i < particleCount; i++) {
+        const sz = minSz + Math.random() * (maxSz - minSz);
+        const left = 5 + Math.random() * 90;
+        const top = 10 + Math.random() * 80;
+        const dur = 3 + Math.random() * 5;
+        const delay = Math.random() * 6;
+        const driftX = -15 + Math.random() * 30;
+        const driftY = -20 - Math.random() * 25;
+        particles += `<div class="float-particle" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;left:${left.toFixed(1)}%;top:${top.toFixed(1)}%;animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s;--drift-x:${driftX.toFixed(0)}px;--drift-y:${driftY.toFixed(0)}px"></div>`;
+      }
+      particleHtml = `<div class="particle-field">${particles}</div>`;
+    }
+
+    // --- Temperature bubbles + steam ---
+    let bubblesHtml = '';
+    let steamHtml = '';
+    if (item.isTemp && state.boilAnimEnabled && typeof val === 'number') {
+      const intensity = Math.max(0, (val - 25) / 45);
+      const bubbleCount = Math.floor(intensity * 10) + 2;
+      let bubbles = '';
+      for (let i = 0; i < bubbleCount; i++) {
+        const sz = 3 + Math.random() * 7;
+        const left = 8 + Math.random() * 84;
+        const bottom = Math.random() * 30;
+        const dur = 1.8 + Math.random() * 2.5;
+        const delay = Math.random() * 3;
+        bubbles += `<div class="temp-bubble" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;left:${left.toFixed(1)}%;bottom:${bottom.toFixed(1)}%;animation-duration:${dur.toFixed(1)}s;animation-delay:${delay.toFixed(1)}s"></div>`;
+      }
+      bubblesHtml = `<div class="temp-bubble-container">${bubbles}</div>`;
+
+      if (val >= 40) {
+        const steamCount = Math.min(Math.floor((val - 40) / 5) + 2, 8);
+        let puffs = '';
+        for (let i = 0; i < steamCount; i++) {
+          const left = 15 + Math.random() * 70;
+          const delay = Math.random() * 2.5;
+          const sz = 8 + Math.random() * 8;
+          puffs += `<div class="steam-puff" style="left:${left.toFixed(1)}%;animation-delay:${delay.toFixed(1)}s;width:${sz.toFixed(0)}px;height:${sz.toFixed(0)}px"></div>`;
+        }
+        steamHtml = `<div class="steam-container">${puffs}</div>`;
+      }
+    }
+
+    // --- 趋势风险标签（基于预测数据的平滑值，与预测页一致）---
+    let trendHtml = '';
+    if (state.predictionData && state.predictionData.predictions && state.predictionData.predictions[item.key]) {
+      const pred = state.predictionData.predictions[item.key];
+      const trColor = pred.risk_color || '#27ae60';
+      const trLevel = pred.risk_level || '安全';
+      const trSlope = pred.trend_dir || '平稳';
+      const slopeIcon = trSlope === '上升' ? '↑' : trSlope === '下降' ? '↓' : '→';
+      trendHtml = `<div class="card-trend-indicator" style="color:${trColor}">趋势: ${slopeIcon}${trSlope} · ${trLevel}</div>`;
+    }
+
+    return `
+      <div class="${cardClass} animate-in" style="animation-delay:${idx * 0.06}s;--bottle-glow-color:${glowColor}">
+        <div class="bottle-glow"></div>
+        <div class="bottle-body">
+          <div class="bottle-liquid">
+            <div class="bottle-liquid-fill" style="height:${fillPercent.toFixed(0)}%;--liquid-top:${liquidTop};--liquid-bottom:${liquidBottom}"></div>
+          </div>
+          ${particleHtml}
+          ${bubblesHtml}
+          ${steamHtml}
+        </div>
+        <div class="oil-card-content">
+          <div class="oil-card-label">${item.label}</div>
+          <div class="oil-card-value-wrap">
+            <div class="oil-card-value">${val}</div>
+            <div class="oil-card-unit">${item.unit}</div>
+          </div>
+          <div class="oil-card-status ${status}">${statusText}</div>
+          ${trendHtml}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ============================================================
+// RENDER: STATUS
+// ============================================================
+function updateStatus(alarm) {
+  const pill = document.getElementById('statusPill');
+  const label = document.getElementById('statusLabel');
+  pill.className = 'status-pill';
+  if (alarm.level >= 2) { pill.classList.add('critical'); label.textContent = t('statusCritical'); }
+  else if (alarm.level >= 1) { pill.classList.add('warning'); label.textContent = t('statusWarning'); }
+  else { pill.classList.add('normal'); label.textContent = t('statusNormal'); }
+}
+
+// ============================================================
+// RENDER: TABLE
+// ============================================================
+function renderTable() {
+  const tbody = document.getElementById('tableBody');
+  const recent = state.historyData.slice(-10).reverse();
+  tbody.innerHTML = recent.map(d => {
+    const a = checkAlarm(d);
+    let s = `<span style="color:var(--success)">${t('statusGood')}</span>`;
+    if (a.level === 1) s = `<span style="color:var(--warning)">${t('statusWarn')}</span>`;
+    if (a.level === 2) s = `<span style="color:var(--danger)">${t('statusBad')}</span>`;
+    return `<tr>
+      <td>${d.timestamp}</td>
+      <td>${d.level1??'--'}</td><td>${d.level2??'--'}</td><td>${d.level3??'--'}</td>
+      <td>${d.level4??'--'}</td><td>${d.level5??'--'}</td>
+      <td>${d.temperature??'--'}</td><td>${d.waterContent??'--'}</td><td>${d.waterActivity??'--'}</td>
+      <td>${s}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ============================================================
+// CHART DRAWING (Canvas)
+// ============================================================
+const chartMeta = {};
+
+function drawChart(canvasId, datasets, xLabels, options = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 20, right: options.rightPad || 20, bottom: 28, left: 40 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  let allVals = [];
+  datasets.forEach(ds => ds.data.forEach(v => { if (v != null) allVals.push(v); }));
+  if (allVals.length === 0) return;
+  let maxV = Math.max(...allVals) * 1.15;
+  let minV = Math.min(0, Math.min(...allVals) * 0.9);
+  if (options.minV != null) minV = options.minV;
+  if (options.maxV != null) maxV = options.maxV;
+
+  const xStep = cW / Math.max(xLabels.length - 1, 1);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 4; i++) {
+    const y = pad.top + cH * (1 - i / 4);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '9px monospace'; ctx.textAlign = 'right';
+    ctx.fillText((minV + (maxV - minV) * i / 4).toFixed(options.decimals || 0), pad.left - 6, y + 3);
+  }
+
+  // Threshold lines
+  if (options.thresholds) {
+    options.thresholds.forEach(th => {
+      const y = pad.top + cH * (1 - (th.value - minV) / (maxV - minV));
+      if (y < pad.top || y > pad.top + cH) return;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = th.color;
+      ctx.lineWidth = 1;
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+    });
+  }
+
+  // Data lines
+  datasets.forEach(ds => {
+    // Gradient fill
+    if (ds.fill) {
+      const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+      grad.addColorStop(0, ds.color.replace(')', ',0.15)').replace('rgb', 'rgba'));
+      grad.addColorStop(1, ds.color.replace(')', ',0.0)').replace('rgb', 'rgba'));
+      ctx.globalAlpha = 0.4;
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      let started = false;
+      ds.data.forEach((v, i) => {
+        if (v == null) return;
+        const x = pad.left + i * xStep;
+        const y = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+        if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+      });
+      ctx.lineTo(pad.left + (ds.data.length - 1) * xStep, pad.top + cH);
+      ctx.lineTo(pad.left, pad.top + cH);
+      ctx.closePath();
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = ds.lineWidth || 1.5;
+    ctx.globalAlpha = ds.alpha || 0.85;
+    ctx.beginPath();
+    let started = false;
+    ds.data.forEach((v, i) => {
+      if (v == null) return;
+      const x = pad.left + i * xStep;
+      const y = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Points with glow
+    if (ds.points !== false) {
+      ds.data.forEach((v, i) => {
+        if (v == null) return;
+        const x = pad.left + i * xStep;
+        const y = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+        // Glow
+        ctx.fillStyle = ds.color;
+        ctx.globalAlpha = 0.15;
+        ctx.beginPath(); ctx.arc(x, y, (ds.pointSize || 2.5) * 2.5, 0, Math.PI * 2); ctx.fill();
+        // Point
+        ctx.globalAlpha = 0.9;
+        ctx.fillStyle = ds.color;
+        ctx.beginPath(); ctx.arc(x, y, ds.pointSize || 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+    }
+  });
+
+  // X labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  const labelStep = Math.max(1, Math.floor(xLabels.length / 7));
+  xLabels.forEach((label, i) => {
+    if (i % labelStep === 0 || i === xLabels.length - 1) {
+      ctx.fillText(label, pad.left + i * xStep, H - 6);
+    }
+  });
+
+  // Legend
+  if (datasets.length > 1) {
+    let lx = pad.left;
+    datasets.forEach(ds => {
+      if (!ds.label) return;
+      ctx.fillStyle = ds.color;
+      ctx.globalAlpha = 0.8;
+      ctx.fillRect(lx, 8, 10, 3);
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '9px sans-serif'; ctx.textAlign = 'left';
+      ctx.fillText(ds.label, lx + 14, 12);
+      lx += ctx.measureText(ds.label).width + 30;
+    });
+  }
+
+  // Store metadata for tooltip
+  chartMeta[canvasId] = { datasets, xLabels, pad, cW, cH, W, H, minV, maxV, xStep };
+}
+
+function drawDashboardCharts() {
+  const data = state.historyData;
+  if (data.length < 2) return;
+  const labels = data.map(d => d.timestamp.substring(5, 10));
+  const T = CFG.thresholds;
+
+  drawChart('chartParticle', [
+    { label: 'L1', data: data.map(d => d.level1), color: '#e74c3c', fill: true },
+    { label: 'L2', data: data.map(d => d.level2), color: '#e67e22' },
+    { label: 'L3', data: data.map(d => d.level3), color: '#f1c40f' },
+    { label: 'L4', data: data.map(d => d.level4), color: '#2ecc71' },
+    { label: 'L5', data: data.map(d => d.level5), color: '#3498db' },
+  ], labels, {
+    thresholds: [
+      { value: T.particle.warning, color: 'rgba(255,170,0,0.6)' },
+      { value: T.particle.critical, color: 'rgba(255,59,92,0.6)' }
+    ]
+  });
+
+  drawChart('chartTemp', [
+    { label: state.lang === 'zh' ? '油温℃' : 'Temp℃', data: data.map(d => d.temperature), color: '#e74c3c', fill: true },
+    { label: state.lang === 'zh' ? '水含量ppm' : 'Water ppm', data: data.map(d => d.waterContent), color: '#3498db' },
+  ], labels, {
+    rightPad: 45,
+    thresholds: [
+      { value: T.temperature.highWarn, color: 'rgba(255,170,0,0.5)' }
+    ]
+  });
+}
+
+function drawTrendCharts() {
+  // If we have trend history data loaded, re-render it
+  if (state.trendHistory) {
+    if (state.trendHistory.multiSeries) {
+      renderTrendChartMulti();
+    } else {
+      renderTrendChartSingle(1);
+    }
+  }
+}
+
+function renderTrendStats(data) {
+  const container = document.getElementById('trendStats');
+  const valid = data.filter(d => d.level1 != null && d.level1 >= 0);
+  if (!valid.length) return;
+
+  const avgL1 = valid.reduce((s, d) => s + d.level1, 0) / valid.length;
+  const maxL1 = Math.max(...valid.map(d => d.level1));
+  const temps = valid.map(d => d.temperature).filter(v => v != null);
+  const wcs = valid.map(d => d.waterContent).filter(v => v != null);
+  const alarms = data.filter(d => checkAlarm(d).level > 0).length;
+
+  const stats = [
+    { label: t('coverageDays'), value: data.length, sub: state.lang === 'zh' ? '天' : 'days' },
+    { label: t('avgL1'), value: avgL1.toFixed(1), sub: t('unitPc') },
+    { label: 'Max L1', value: maxL1, sub: t('unitPc') },
+    { label: t('tempRange'), value: `${Math.min(...temps).toFixed(1)}~${Math.max(...temps).toFixed(1)}`, sub: '℃' },
+    { label: t('avgWater'), value: (wcs.reduce((s,v) => s+v, 0) / wcs.length).toFixed(1), sub: 'ppm' },
+    { label: t('alarmCount'), value: alarms, sub: state.lang === 'zh' ? '次' : 'times' },
+  ];
+
+  container.innerHTML = stats.map(s => `
+    <div class="trend-stat-card">
+      <div class="trend-stat-label">${s.label}</div>
+      <div class="trend-stat-value">${s.value}</div>
+      <div class="trend-stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// PARTICLE BACKGROUND
+// ============================================================
+function initParticles() {
+  const canvas = document.getElementById('bgCanvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  const COUNT = 60;
+
+  function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+  resize();
+  window.addEventListener('resize', resize);
+
+  class P {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.vx = (Math.random() - 0.5) * 0.25;
+      this.vy = (Math.random() - 0.5) * 0.25;
+      this.r = Math.random() * 1.5 + 0.3;
+      this.a = Math.random() * 0.3 + 0.05;
+      this.pulseSpeed = 0.005 + Math.random() * 0.01;
+      this.pulsePhase = Math.random() * Math.PI * 2;
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+      if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+      this.pulsePhase += this.pulseSpeed;
+    }
+    draw() {
+      const style = getComputedStyle(document.documentElement);
+      const accent = style.getPropertyValue('--accent').trim() || '#00d4ff';
+      const pulse = 0.5 + 0.5 * Math.sin(this.pulsePhase);
+      ctx.fillStyle = accent;
+      ctx.globalAlpha = this.a * (0.6 + 0.4 * pulse);
+      ctx.beginPath(); ctx.arc(this.x, this.y, this.r * (0.8 + 0.2 * pulse), 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < COUNT; i++) particles.push(new P());
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    if (state.particlesEnabled) {
+      particles.forEach(p => { p.update(); p.draw(); });
+      const style = getComputedStyle(document.documentElement);
+      const accent = style.getPropertyValue('--accent').trim() || '#00d4ff';
+      ctx.strokeStyle = accent; ctx.lineWidth = 0.3;
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx*dx + dy*dy);
+          if (dist < 120) {
+            ctx.globalAlpha = 0.07 * (1 - dist / 120);
+            ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y); ctx.stroke();
+          }
+        }
+      }
+    }
+    ctx.globalAlpha = 1;
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function switchPage(pageId, tabEl) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  if (tabEl) tabEl.classList.add('active');
+
+  if (pageId === 'pageTrend') {
+    setTimeout(() => {
+      if (!state.trendHistory) {
+        fetchTrendHistory();
+      } else {
+        drawTrendCharts();
+      }
+    }, 100);
+  }
+  if (pageId === 'pagePrediction') {
+    setTimeout(() => {
+      if (!state.rfPrediction) {
+        fetchRFPrediction();
+      } else {
+        renderRFPrediction(state.rfPrediction);
+      }
+      if (!state.predictionData) {
+        fetchPredictionData();
+      } else {
+        renderPredictionPage(state.predictionData);
+      }
+    }, 100);
+  }
+  if (pageId === 'pageSettings') {
+    loadThresholdConfig();
+  }
+  if (pageId === 'pageAlarms') {
+    setTimeout(async () => {
+      renderOverviewRings();
+      if (!allAlarms.length) {
+        try {
+          const r = await fetch(API_BASE_URL + '/api/alarms');
+          const d = await r.json();
+          if (d.code === 0 && d.data && d.data.length > 0) {
+            // 将服务端分组报警展平为单行格式
+            const unitMap = { particle: '个/mL', temperature: '℃', water: 'ppm', activity: 'aw' };
+            const typeLabelMap = { particle: 'alarmTypeParticle', temperature: 'alarmTypeTemp', water: 'alarmTypeWater', activity: 'alarmTypeWater' };
+            const statusList = ['pending', 'confirmed', 'resolved'];
+            d.data.forEach((alarm, ai) => {
+              if (alarm.types && alarm.types.length > 0) {
+                alarm.types.forEach((tp, ti) => {
+                  allAlarms.push({
+                    id: ai * 100 + ti + 1,
+                    time: alarm.timestamp,
+                    type: tp.type,
+                    typeLabel: typeLabelMap[tp.type] || 'alarmTypeParticle',
+                    level: tp.level || alarm.level,
+                    value: parseFloat(tp.value).toFixed(1) + ' ' + (unitMap[tp.type] || ''),
+                    status: 'pending',
+                    date: new Date(alarm.timestamp.replace(' ', 'T'))
+                  });
+                });
+              }
+            });
+            allAlarms.sort((a, b) => b.date - a.date);
+          }
+        } catch(e) { console.warn('获取报警数据失败:', e); }
+      }
+      filterAlarms();
+    }, 100);
+  }
+}
+
+function setTrendRange(days, btn) {
+  state.trendRange = days;
+  document.querySelectorAll('.trend-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  // Update date inputs to reflect range
+  const end = new Date();
+  const start = new Date(Date.now() - days * 24 * 3600 * 1000);
+  document.getElementById('trendStartDate').value = start.toISOString().substring(0, 10);
+  document.getElementById('trendEndDate').value = end.toISOString().substring(0, 10);
+  fetchTrendHistory();
+}
+
+// ============================================================
+// TREND HISTORY FETCH & CONTROLS
+// ============================================================
+const DATA_POINT_COLORS = {
+  level1: '#e74c3c', level2: '#e67e22', level3: '#f1c40f',
+  level4: '#2ecc71', level5: '#3498db',
+  temperature: '#e74c3c', waterContent: '#3498db', waterActivity: '#9b59b6'
+};
+const DATA_POINT_NAMES = {
+  level1: 'L1(>4μm)', level2: 'L2(>6μm)', level3: 'L3(>14μm)',
+  level4: 'L4(>21μm)', level5: 'L5(>38μm)',
+  temperature: '温度(℃)', waterContent: '水含量(ppm)', waterActivity: '水活性(aw)'
+};
+
+async function fetchTrendHistory() {
+  const btn = document.querySelector('.trend-fetch-btn');
+  if (btn) { btn.disabled = true; btn.textContent = t('chartLoading'); }
+
+  const dp = document.getElementById('trendDataPoint').value;
+  const algo = document.getElementById('trendAlgorithm').value;
+  const interval = document.getElementById('trendInterval').value;
+  const startDate = document.getElementById('trendStartDate').value;
+  const endDate = document.getElementById('trendEndDate').value;
+
+  // For multi-series (all_particle / all), we fetch each data point separately
+  if (dp === 'all_particle' || dp === 'all') {
+    const keys = dp === 'all_particle'
+      ? ['level1','level2','level3','level4','level5']
+      : ['level1','level2','level3','level4','level5','temperature','waterContent','waterActivity'];
+    const results = {};
+    try {
+      await Promise.all(keys.map(async k => {
+        const params = new URLSearchParams({ dataPoint: k, algorithm: algo, interval });
+        if (startDate) params.append('start', startDate + 'T00:00:00');
+        if (endDate) params.append('end', endDate + 'T23:59:59');
+        const resp = await fetch(API_BASE_URL + '/api/history?' + params.toString());
+        const json = await resp.json();
+        if (json.code === 0 && json.data) results[k] = json.data;
+      }));
+
+      // Merge labels from first available result
+      const firstKey = Object.keys(results)[0];
+      if (!firstKey) {
+        state.trendHistory = null;
+        renderTrendChartEmpty();
+        return;
+      }
+      const labels = results[firstKey].labels;
+      const multiSeries = {};
+      const allStats = {};
+      keys.forEach(k => {
+        if (results[k]) {
+          multiSeries[k] = results[k].values;
+          allStats[k] = results[k].stats;
+        }
+      });
+
+      state.trendHistory = { labels, multiSeries, allStats, dataPoint: dp, algorithm: algo, interval };
+      renderTrendChartMulti();
+      updateTrendInfo(labels.length, allStats);
+    } catch(e) {
+      console.error('[Trend] Fetch error:', e);
+      state.trendHistory = null;
+      renderTrendChartEmpty();
+    }
+  } else {
+    // Single data point
+    try {
+      const params = new URLSearchParams({ dataPoint: dp, algorithm: algo, interval });
+      if (startDate) params.append('start', startDate + 'T00:00:00');
+      if (endDate) params.append('end', endDate + 'T23:59:59');
+      const resp = await fetch(API_BASE_URL + '/api/history?' + params.toString());
+      const json = await resp.json();
+      if (json.code === 0 && json.data) {
+        state.trendHistory = { labels: json.data.labels, values: json.data.values, stats: json.data.stats, dataPoint: dp, algorithm: algo, interval };
+        startTrendAnimation();
+        updateTrendStats(json.data.stats);
+        updateTrendInfo(json.data.labels.length, { [dp]: json.data.stats });
+      } else {
+        state.trendHistory = null;
+        renderTrendChartEmpty();
+      }
+    } catch(e) {
+      console.error('[Trend] Fetch error:', e);
+      state.trendHistory = null;
+      renderTrendChartEmpty();
+    }
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = t('fetchHistory'); }
+}
+
+function onTrendOptionChange() {
+  // Auto-fetch when any option changes
+  fetchTrendHistory();
+}
+
+function renderTrendChartEmpty() {
+  const canvas = document.getElementById('trendMainChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, rect.width, rect.height);
+  ctx.fillStyle = 'rgba(255,255,255,0.25)';
+  ctx.font = '14px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(t('chartNoData'), rect.width / 2, rect.height / 2);
+}
+
+function updateTrendInfo(count, statsMap) {
+  const info = document.getElementById('trendChartInfo');
+  if (!info) return;
+  const algo = document.getElementById('trendAlgorithm').value;
+  const interval = document.getElementById('trendInterval').value;
+  const algoName = t('algo' + algo.charAt(0).toUpperCase() + algo.slice(1));
+  let html = `<span>${t('chartDataCount')}: ${count}</span>`;
+  html += `<span>${t('intervalLabel')}: ${interval}min</span>`;
+  if (statsMap) {
+    const firstKey = Object.keys(statsMap)[0];
+    if (firstKey && statsMap[firstKey]) {
+      const s = statsMap[firstKey];
+      if (s.avg != null) html += `<span>${t('chartAvg')}: ${s.avg.toFixed(2)}</span>`;
+      if (s.max != null) html += `<span>${t('chartMax')}: ${s.max.toFixed(2)}</span>`;
+      if (s.min != null) html += `<span>${t('chartMin')}: ${s.min.toFixed(2)}</span>`;
+    }
+  }
+  info.innerHTML = html;
+}
+
+function updateTrendStats(stats) {
+  const container = document.getElementById('trendStats');
+  if (!stats || !container) return;
+  const items = [
+    { label: t('chartDataCount'), value: stats.count || 0, sub: '' },
+    { label: t('chartAvg'), value: stats.avg?.toFixed(2) || '--', sub: '' },
+    { label: t('chartMax'), value: stats.max?.toFixed(2) || '--', sub: '' },
+    { label: t('chartMin'), value: stats.min?.toFixed(2) || '--', sub: '' },
+  ];
+  container.innerHTML = items.map(s => `
+    <div class="trend-stat-card">
+      <div class="trend-stat-label">${s.label}</div>
+      <div class="trend-stat-value">${s.value}</div>
+      <div class="trend-stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// TREND CHART ANIMATION (right-extending)
+// ============================================================
+function startTrendAnimation() {
+  if (state.trendAnimId) cancelAnimationFrame(state.trendAnimId);
+  state.trendAnimProgress = 0;
+  const duration = 1200; // ms
+  const startTime = performance.now();
+
+  function animate(now) {
+    const elapsed = now - startTime;
+    state.trendAnimProgress = Math.min(elapsed / duration, 1);
+    // Ease out cubic
+    const eased = 1 - Math.pow(1 - state.trendAnimProgress, 3);
+    renderTrendChartSingle(eased);
+    if (state.trendAnimProgress < 1) {
+      state.trendAnimId = requestAnimationFrame(animate);
+    }
+  }
+  state.trendAnimId = requestAnimationFrame(animate);
+}
+
+// ============================================================
+// RENDER SINGLE-SERIES TREND CHART
+// ============================================================
+function renderTrendChartSingle(progress = 1) {
+  const h = state.trendHistory;
+  if (!h || !h.labels || !h.values) return;
+
+  const canvas = document.getElementById('trendMainChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 24, right: 24, bottom: 32, left: 48 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const vals = h.values;
+  const labels = h.labels;
+  const n = vals.length;
+  if (n === 0) return;
+
+  // Compute visible count based on animation progress
+  const visibleCount = Math.max(1, Math.ceil(n * progress));
+
+  const validVals = vals.filter(v => v != null && v >= 0);
+  if (validVals.length === 0) return;
+  let maxV = Math.max(...validVals) * 1.15;
+  let minV = Math.min(0, Math.min(...validVals) * 0.9);
+
+  const xStep = cW / Math.max(n - 1, 1);
+  const dp = h.dataPoint;
+  const color = DATA_POINT_COLORS[dp] || '#00d4ff';
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + cH * (1 - i / 5);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '10px monospace'; ctx.textAlign = 'right';
+    ctx.fillText((minV + (maxV - minV) * i / 5).toFixed(1), pad.left - 6, y + 3);
+  }
+
+  // Reference lines
+  drawRefLines(ctx, h.stats, minV, maxV, pad, cW, cH, dp);
+
+  // Gradient fill
+  const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + cH);
+  grad.addColorStop(0, hexToRgba(color, 0.18));
+  grad.addColorStop(1, hexToRgba(color, 0.0));
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  let started = false;
+  let lastX = pad.left;
+  for (let i = 0; i < visibleCount; i++) {
+    if (vals[i] == null) continue;
+    const x = pad.left + i * xStep;
+    const y = pad.top + cH * (1 - (vals[i] - minV) / (maxV - minV));
+    if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+    lastX = x;
+  }
+  ctx.lineTo(lastX, pad.top + cH);
+  ctx.lineTo(pad.left, pad.top + cH);
+  ctx.closePath();
+  ctx.globalAlpha = 0.5;
+  ctx.fill();
+  ctx.globalAlpha = 1;
+
+  // Data line
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  started = false;
+  for (let i = 0; i < visibleCount; i++) {
+    if (vals[i] == null) continue;
+    const x = pad.left + i * xStep;
+    const y = pad.top + cH * (1 - (vals[i] - minV) / (maxV - minV));
+    if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+
+  // Glow on leading edge
+  if (progress < 1 && visibleCount > 0) {
+    const edgeIdx = visibleCount - 1;
+    if (vals[edgeIdx] != null) {
+      const ex = pad.left + edgeIdx * xStep;
+      const ey = pad.top + cH * (1 - (vals[edgeIdx] - minV) / (maxV - minV));
+      const glowGrad = ctx.createRadialGradient(ex, ey, 0, ex, ey, 12);
+      glowGrad.addColorStop(0, hexToRgba(color, 0.6));
+      glowGrad.addColorStop(1, hexToRgba(color, 0));
+      ctx.fillStyle = glowGrad;
+      ctx.beginPath(); ctx.arc(ex, ey, 12, 0, Math.PI * 2); ctx.fill();
+    }
+  }
+
+  // Points (only when not too many)
+  if (n <= 100) {
+    for (let i = 0; i < visibleCount; i++) {
+      if (vals[i] == null) continue;
+      const x = pad.left + i * xStep;
+      const y = pad.top + cH * (1 - (vals[i] - minV) / (maxV - minV));
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.15;
+      ctx.beginPath(); ctx.arc(x, y, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // X labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  const labelStep = Math.max(1, Math.floor(n / 8));
+  for (let i = 0; i < n; i++) {
+    if (i % labelStep === 0 || i === n - 1) {
+      ctx.fillText(labels[i], pad.left + i * xStep, H - 8);
+    }
+  }
+
+  // Chart title update
+  const titleEl = document.getElementById('trendChartTitle');
+  if (titleEl) {
+    const dpName = DATA_POINT_NAMES[dp] || dp;
+    const algoNames = { raw: '原始', avg: '均值', max: '最大', min: '最小', diff: '差值', latest: '最新', earliest: '最早', sum: '累计', count: '计数' };
+    titleEl.textContent = `${dpName} ${algoNames[h.algorithm] || ''} 趋势`;
+  }
+
+  // Store for tooltip
+  chartMeta['trendMainChart'] = { datasets: [{ data: vals, color, label: DATA_POINT_NAMES[dp] }], xLabels: labels, pad, cW, cH, W, H, minV, maxV, xStep };
+}
+
+// ============================================================
+// RENDER MULTI-SERIES TREND CHART
+// ============================================================
+function renderTrendChartMulti() {
+  const h = state.trendHistory;
+  if (!h || !h.multiSeries) return;
+
+  const canvas = document.getElementById('trendMainChart');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = rect.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 24, right: 24, bottom: 32, left: 48 };
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  const labels = h.labels;
+  const keys = Object.keys(h.multiSeries);
+  const n = labels.length;
+  if (n === 0 || keys.length === 0) return;
+
+  // Compute global min/max
+  let allVals = [];
+  keys.forEach(k => h.multiSeries[k].forEach(v => { if (v != null) allVals.push(v); }));
+  if (allVals.length === 0) return;
+  let maxV = Math.max(...allVals) * 1.15;
+  let minV = Math.min(0, Math.min(...allVals) * 0.9);
+
+  const xStep = cW / Math.max(n - 1, 1);
+
+  // Grid
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + cH * (1 - i / 5);
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.25)';
+    ctx.font = '10px monospace'; ctx.textAlign = 'right';
+    ctx.fillText((minV + (maxV - minV) * i / 5).toFixed(1), pad.left - 6, y + 3);
+  }
+
+  // Reference lines (use first key's stats)
+  const firstStats = h.allStats[keys[0]];
+  drawRefLines(ctx, firstStats, minV, maxV, pad, cW, cH, keys[0]);
+
+  // Draw each series
+  keys.forEach((k, ki) => {
+    const vals = h.multiSeries[k];
+    const color = DATA_POINT_COLORS[k] || '#00d4ff';
+
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.globalAlpha = 0.85;
+    ctx.beginPath();
+    let started = false;
+    vals.forEach((v, i) => {
+      if (v == null) return;
+      const x = pad.left + i * xStep;
+      const y = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+      if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+
+    // Points (only when not too many)
+    if (n <= 80) {
+      vals.forEach((v, i) => {
+        if (v == null) return;
+        const x = pad.left + i * xStep;
+        const y = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.8;
+        ctx.beginPath(); ctx.arc(x, y, 2.5, 0, Math.PI * 2); ctx.fill();
+        ctx.globalAlpha = 1;
+      });
+    }
+  });
+
+  // X labels
+  ctx.fillStyle = 'rgba(255,255,255,0.3)';
+  ctx.font = '9px monospace'; ctx.textAlign = 'center';
+  const labelStep = Math.max(1, Math.floor(n / 8));
+  for (let i = 0; i < n; i++) {
+    if (i % labelStep === 0 || i === n - 1) {
+      ctx.fillText(labels[i], pad.left + i * xStep, H - 8);
+    }
+  }
+
+  // Legend
+  let lx = pad.left;
+  keys.forEach(k => {
+    const color = DATA_POINT_COLORS[k] || '#00d4ff';
+    const name = DATA_POINT_NAMES[k] || k;
+    ctx.fillStyle = color;
+    ctx.globalAlpha = 0.8;
+    ctx.fillRect(lx, 8, 10, 3);
+    ctx.globalAlpha = 1;
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '9px sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(name, lx + 14, 12);
+    lx += ctx.measureText(name).width + 30;
+  });
+
+  // Chart title
+  const titleEl = document.getElementById('trendChartTitle');
+  if (titleEl) {
+    titleEl.textContent = h.dataPoint === 'all_particle' ? '全部颗粒度趋势' : '全部指标趋势';
+  }
+
+  // Store for tooltip
+  const datasets = keys.map(k => ({ data: h.multiSeries[k], color: DATA_POINT_COLORS[k], label: DATA_POINT_NAMES[k] }));
+  chartMeta['trendMainChart'] = { datasets, xLabels: labels, pad, cW, cH, W, H, minV, maxV, xStep };
+}
+
+// ============================================================
+// REFERENCE LINES HELPER
+// ============================================================
+function drawRefLines(ctx, stats, minV, maxV, pad, cW, cH, dp) {
+  if (!stats) return;
+  const refMode = document.getElementById('trendRefLines')?.value || 'avg';
+  const range = maxV - minV;
+  if (range === 0) return;
+
+  const drawHLine = (value, color, label, dash) => {
+    const y = pad.top + cH * (1 - (value - minV) / range);
+    if (y < pad.top - 5 || y > pad.top + cH + 5) return;
+    ctx.save();
+    ctx.setLineDash(dash || [6, 4]);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.6;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(pad.left + cW, y); ctx.stroke();
+    ctx.setLineDash([]);
+    // Label
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = color;
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(`${label}: ${value.toFixed(2)}`, pad.left + cW - 80, y - 4);
+    ctx.restore();
+  };
+
+  if (refMode === 'avg' || refMode === 'all') {
+    if (stats.avg != null) drawHLine(stats.avg, '#f39c12', t('chartAvg'), [6, 4]);
+  }
+  if (refMode === 'maxmin' || refMode === 'all') {
+    if (stats.max != null) drawHLine(stats.max, '#e74c3c', t('chartMax'), [3, 3]);
+    if (stats.min != null) drawHLine(stats.min, '#3498db', t('chartMin'), [3, 3]);
+  }
+  if (refMode === 'threshold') {
+    const T = CFG.thresholds;
+    const thMap = {
+      level1: [{ v: T.particle.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.particle.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      level2: [{ v: T.particle.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.particle.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      level3: [{ v: T.particle.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.particle.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      level4: [{ v: T.particle.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.particle.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      level5: [{ v: T.particle.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.particle.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      temperature: [{ v: T.temperature.highWarn, c: 'rgba(255,170,0,0.8)', l: '高温预警' }, { v: T.temperature.highCritical, c: 'rgba(255,59,92,0.8)', l: '高温严重' }],
+      waterContent: [{ v: T.waterContent.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.waterContent.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }],
+      waterActivity: [{ v: T.waterActivity.warning, c: 'rgba(255,170,0,0.8)', l: '预警' }, { v: T.waterActivity.critical, c: 'rgba(255,59,92,0.8)', l: '严重' }]
+    };
+    const ths = thMap[dp] || [];
+    ths.forEach(th => drawHLine(th.v, th.c, th.l, [4, 4]));
+  }
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ============================================================
+// SETTINGS
+// ============================================================
+function toggleSettings() {
+  switchPage('pageSettings', document.querySelector('.tab-item[data-page="pageSettings"]'));
+}
+
+function applyTheme(theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+  document.querySelectorAll('.theme-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.theme === theme);
+  });
+  setTimeout(() => { drawDashboardCharts(); if (document.getElementById('pageTrend').classList.contains('active')) drawTrendCharts(); }, 100);
+  try { localStorage.setItem('oil_theme', theme); } catch(e) {}
+}
+
+function applyLang(lang) {
+  state.lang = lang;
+  document.documentElement.setAttribute('data-lang', lang);
+  document.querySelectorAll('.lang-option').forEach(el => {
+    el.classList.toggle('active', el.dataset.lang === lang);
+  });
+  applyI18n();
+  if (state.currentData) {
+    renderCards(state.currentData);
+    renderTable();
+  }
+  drawDashboardCharts();
+  if (document.getElementById('pageTrend').classList.contains('active')) drawTrendCharts();
+  try { localStorage.setItem('oil_lang', lang); } catch(e) {}
+}
+
+function toggleParticles() {
+  state.particlesEnabled = !state.particlesEnabled;
+  document.getElementById('toggleParticles').classList.toggle('on', state.particlesEnabled);
+}
+function toggleOilAnim() {
+  state.oilAnimEnabled = !state.oilAnimEnabled;
+  document.getElementById('toggleOil').classList.toggle('on', state.oilAnimEnabled);
+  if (state.currentData) renderCards(state.currentData);
+}
+function toggleBoilAnim() {
+  state.boilAnimEnabled = !state.boilAnimEnabled;
+  document.getElementById('toggleBoil').classList.toggle('on', state.boilAnimEnabled);
+  if (state.currentData) renderCards(state.currentData);
+}
+
+// ============================================================
+// CLOCK
+// ============================================================
+function updateClock() {
+  const now = new Date();
+  document.getElementById('navTime').textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+}
+
+// ============================================================
+// DATA REFRESH
+// ============================================================
+async function refreshData() {
+  const latest = await apiFetchLatest();
+
+  if (latest && latest.level1 != null) {
+    state.currentData = latest;
+    const exists = state.historyData.some(d => d.timestamp === latest.timestamp);
+    if (!exists) {
+      state.historyData.push({ ...latest, alarmLevel: 0 });
+      if (state.historyData.length > 60) state.historyData.shift();
+    }
+  } else if (!state.currentData) {
+    // API不可用时显示无数据，不使用模拟数据
+    renderCards({ level1: null });
+    document.getElementById('dataTimeLabel').textContent = t('noData');
+    return;
+  }
+
+  const alarm = checkAlarm(state.currentData);
+  renderCards(state.currentData);
+  updateStatus(alarm);
+  renderTable();
+  renderTrendWarning();
+  drawDashboardCharts();
+
+  document.getElementById('dataTimeLabel').textContent = state.currentData.timestamp;
+  document.getElementById('footerUpdate').textContent = t('lastUpdate').replace('--', new Date().toLocaleString('zh-CN', { hour12: false }));
+}
+
+// ============================================================
+// CHART TOOLTIP
+// ============================================================
+function showChartTooltip(canvasId, clientX, clientY) {
+  const meta = chartMeta[canvasId];
+  if (!meta) return;
+  const canvas = document.getElementById(canvasId);
+  const rect = canvas.getBoundingClientRect();
+  const mx = clientX - rect.left;
+  const my = clientY - rect.top;
+  const { datasets, xLabels, pad, cW, cH, minV, maxV, xStep } = meta;
+
+  // Find nearest data index by x
+  let nearIdx = -1, nearDist = Infinity;
+  for (let i = 0; i < xLabels.length; i++) {
+    const px = pad.left + i * xStep;
+    const d = Math.abs(mx - px);
+    if (d < nearDist) { nearDist = d; nearIdx = i; }
+  }
+  if (nearIdx < 0 || nearDist > 30) { hideChartTooltip(); return; }
+
+  // Check if any dataset has a point near enough in y
+  let found = false;
+  for (const ds of datasets) {
+    const v = ds.data[nearIdx];
+    if (v == null) continue;
+    const py = pad.top + cH * (1 - (v - minV) / (maxV - minV));
+    if (Math.abs(my - py) < 25) { found = true; break; }
+  }
+  if (!found) { hideChartTooltip(); return; }
+
+  // Build tooltip content
+  const tooltip = document.getElementById('chartTooltip');
+  let html = `<div class="tt-date">${xLabels[nearIdx]}</div>`;
+  datasets.forEach(ds => {
+    const v = ds.data[nearIdx];
+    if (v == null) return;
+    html += `<div class="tt-row">
+      <span class="tt-dot" style="background:${ds.color}"></span>
+      <span class="tt-label">${ds.label || ''}</span>
+      <span class="tt-val" style="color:${ds.color}">${v}</span>
+    </div>`;
+  });
+  tooltip.innerHTML = html;
+
+  // Position tooltip
+  const tw = tooltip.offsetWidth || 160;
+  const th = tooltip.offsetHeight || 80;
+  let tx = clientX + 14;
+  let ty = clientY - th / 2;
+  if (tx + tw > window.innerWidth - 10) tx = clientX - tw - 14;
+  if (ty < 10) ty = 10;
+  if (ty + th > window.innerHeight - 10) ty = window.innerHeight - th - 10;
+  tooltip.style.left = tx + 'px';
+  tooltip.style.top = ty + 'px';
+  tooltip.classList.add('visible');
+}
+
+function hideChartTooltip() {
+  document.getElementById('chartTooltip').classList.remove('visible');
+}
+
+function initChartTooltips() {
+  const canvasIds = ['chartParticle', 'chartTemp', 'trendMainChart'];
+  canvasIds.forEach(id => {
+    const canvas = document.getElementById(id);
+    if (!canvas) return;
+    canvas.addEventListener('mousemove', e => showChartTooltip(id, e.clientX, e.clientY));
+    canvas.addEventListener('mouseleave', hideChartTooltip);
+  });
+}
+
+// ============================================================
+// BRIGHTNESS & CONTRAST
+// ============================================================
+function applyBrightness(val) {
+  state.brightness = parseInt(val);
+  document.getElementById('valBrightness').textContent = val + '%';
+  applyDisplayFilters();
+  try { localStorage.setItem('oil_brightness', val); } catch(e) {}
+}
+
+function applyContrast(val) {
+  state.contrast = parseInt(val);
+  document.getElementById('valContrast').textContent = val + '%';
+  applyDisplayFilters();
+  try { localStorage.setItem('oil_contrast', val); } catch(e) {}
+}
+
+function applyDisplayFilters() {
+  document.body.style.filter = `brightness(${state.brightness}%) contrast(${state.contrast}%)`;
+}
+
+// ============================================================
+// RING CHART DRAWING
+// ============================================================
+function drawRingChart(canvasId, percent, color, bgColor) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const size = 120;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.scale(dpr, dpr);
+
+  const cx = size / 2, cy = size / 2, r = 46, lw = 10;
+  const startAngle = -Math.PI / 2;
+  const endAngle = startAngle + (Math.PI * 2 * Math.min(percent, 100) / 100);
+
+  // Background ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, 0, Math.PI * 2);
+  ctx.strokeStyle = bgColor || 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = lw;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Value ring
+  if (percent > 0) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw;
+    ctx.lineCap = 'round';
+    ctx.stroke();
+
+    // Glow effect
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, startAngle, endAngle);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = lw + 4;
+    ctx.globalAlpha = 0.15;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+}
+
+function renderOverviewRings() {
+  // Generate device status data from history
+  const hist = state.historyData;
+  const total = hist.length || 1;
+  let onlineCount = 0, alarmCount = 0, healthCount = 0;
+  hist.forEach(d => {
+    if (d.level1 != null && d.level1 >= 0) onlineCount++;
+    const a = checkAlarm(d);
+    if (a.level > 0) alarmCount++;
+    if (a.level === 0 && d.level1 != null && d.level1 >= 0) healthCount++;
+  });
+  const onlineRate = Math.round(onlineCount / total * 100);
+  const offlineRate = 100 - onlineRate;
+  const alarmRate = Math.round(alarmCount / total * 100);
+  const healthRate = Math.round(healthCount / total * 100);
+
+  drawRingChart('ringOnline', onlineRate, '#00e676');
+  drawRingChart('ringOffline', offlineRate, '#ff3b5c');
+  drawRingChart('ringAlarm', alarmRate, '#ffaa00');
+  drawRingChart('ringHealth', healthRate, '#00d4ff');
+
+  document.getElementById('valOnline').textContent = onlineRate;
+  document.getElementById('valOffline').textContent = offlineRate;
+  document.getElementById('valAlarm').textContent = alarmRate;
+  document.getElementById('valHealth').textContent = healthRate;
+}
+
+// ============================================================
+// ALARM DATA
+// ============================================================
+let allAlarms = [];
+let filteredAlarms = [];
+let alarmPage = 1;
+const ALARMS_PER_PAGE = 10;
+
+function filterAlarms() {
+  const type = document.getElementById('alarmFilterType').value;
+  const level = document.getElementById('alarmFilterLevel').value;
+  const status = document.getElementById('alarmFilterStatus').value;
+  const range = parseInt(document.getElementById('alarmFilterRange').value);
+
+  const cutoff = new Date(Date.now() - range * 24 * 3600 * 1000);
+
+  filteredAlarms = allAlarms.filter(a => {
+    if (type !== 'all' && a.type !== type) return false;
+    if (level !== 'all' && a.level !== parseInt(level)) return false;
+    if (status !== 'all' && a.status !== status) return false;
+    if (a.date < cutoff) return false;
+    return true;
+  });
+
+  alarmPage = 1;
+  renderAlarmSummary();
+  renderAlarmTable();
+}
+
+function renderAlarmSummary() {
+  document.getElementById('alarmTotal').textContent = filteredAlarms.length;
+  document.getElementById('alarmWarnCount').textContent = filteredAlarms.filter(a => a.level === 1).length;
+  document.getElementById('alarmCritCount').textContent = filteredAlarms.filter(a => a.level === 2).length;
+  document.getElementById('alarmResolvedCount').textContent = filteredAlarms.filter(a => a.status === 'resolved').length;
+}
+
+function renderAlarmTable() {
+  const tbody = document.getElementById('alarmTableBody');
+  const start = (alarmPage - 1) * ALARMS_PER_PAGE;
+  const pageData = filteredAlarms.slice(start, start + ALARMS_PER_PAGE);
+
+  if (!pageData.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:24px">${t('noData')}</td></tr>`;
+    document.getElementById('alarmPagination').innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = pageData.map(a => {
+    const levelClass = a.level === 2 ? 'crit' : 'warn';
+    const levelText = a.level === 2 ? t('alarmLevelCrit') : t('alarmLevelWarn');
+    const statusClass = a.status === 'resolved' ? 'resolved' : a.status === 'confirmed' ? 'confirmed' : 'pending';
+    const statusText = t('alarmStatus' + a.status.charAt(0).toUpperCase() + a.status.slice(1));
+    const typeText = t(a.typeLabel);
+
+    let actions = '';
+    if (a.status === 'pending') {
+      actions = `<button class="alarm-action-btn" onclick="confirmAlarm(${a.id})">${t('alarmConfirm')}</button>`;
+    } else if (a.status === 'confirmed') {
+      actions = `<button class="alarm-action-btn resolve" onclick="resolveAlarm(${a.id})">${t('alarmResolve')}</button>`;
+    } else {
+      actions = '<span style="color:var(--text-dim)">--</span>';
+    }
+
+    return `<tr>
+      <td>${a.time}</td>
+      <td>${typeText}</td>
+      <td><span class="alarm-level-badge ${levelClass}">${levelText}</span></td>
+      <td style="font-family:var(--font-mono);font-size:12px">${a.value}</td>
+      <td><span class="alarm-level-badge ${statusClass}">${statusText}</span></td>
+      <td>${actions}</td>
+    </tr>`;
+  }).join('');
+
+  renderAlarmPagination();
+}
+
+function renderAlarmPagination() {
+  const totalPages = Math.ceil(filteredAlarms.length / ALARMS_PER_PAGE);
+  if (totalPages <= 1) { document.getElementById('alarmPagination').innerHTML = ''; return; }
+
+  let html = '';
+  html += `<button class="page-btn" ${alarmPage <= 1 ? 'disabled' : ''} onclick="goAlarmPage(${alarmPage - 1})">‹</button>`;
+  for (let i = 1; i <= totalPages; i++) {
+    if (totalPages > 7 && i > 2 && i < totalPages - 1 && Math.abs(i - alarmPage) > 1) {
+      if (i === 3 || i === totalPages - 2) html += '<span class="page-dots">…</span>';
+      continue;
+    }
+    html += `<button class="page-btn ${i === alarmPage ? 'active' : ''}" onclick="goAlarmPage(${i})">${i}</button>`;
+  }
+  html += `<button class="page-btn" ${alarmPage >= totalPages ? 'disabled' : ''} onclick="goAlarmPage(${alarmPage + 1})">›</button>`;
+  document.getElementById('alarmPagination').innerHTML = html;
+}
+
+function goAlarmPage(p) {
+  const totalPages = Math.ceil(filteredAlarms.length / ALARMS_PER_PAGE);
+  if (p < 1 || p > totalPages) return;
+  alarmPage = p;
+  renderAlarmTable();
+}
+
+function confirmAlarm(id) {
+  const a = allAlarms.find(x => x.id === id);
+  if (a) a.status = 'confirmed';
+  filterAlarms();
+}
+
+function resolveAlarm(id) {
+  const a = allAlarms.find(x => x.id === id);
+  if (a) a.status = 'resolved';
+  filterAlarms();
+}
+
+// ============================================================
+// RF PREDICTION (随机森林AI预警)
+// ============================================================
+async function fetchRFPrediction() {
+  const el = document.getElementById('rfPredContent');
+  if (el) el.innerHTML = '<div class="pred-loading">正在执行AI预测分析...</div>';
+  try {
+    const r = await fetch(API_BASE_URL + '/api/rf-prediction');
+    const d = await r.json();
+    if (d.code === 0 && d.data) {
+      state.rfPrediction = d.data;
+      renderRFPrediction(d.data);
+    } else {
+      if (el) el.innerHTML = '<div class="pred-loading" style="color:var(--danger)">' + (d.msg || 'AI预测不可用') + '</div>';
+    }
+  } catch (e) {
+    if (el) el.innerHTML = '<div class="pred-loading" style="color:var(--danger)">AI预测请求失败: ' + e.message + '</div>';
+  }
+}
+
+function renderRFPrediction(data) {
+  const metaEl = document.getElementById('rfPredMeta');
+  const el = document.getElementById('rfPredContent');
+  if (!el) return;
+
+  const overallColor = data.overall_color || '#4caf50';
+  const overallRisk = data.overall_risk || '安全';
+  if (metaEl) {
+    const modelCount = data.model_info ? Object.keys(data.model_info).length : 0;
+    metaEl.innerHTML = `预测时间: <span style="color:var(--text)">${data.predict_time}</span> · 已训练模型: <span style="color:var(--text)">${modelCount}</span> 个 · 整体风险: <span style="color:${overallColor};font-weight:bold">${overallRisk}</span>`;
+  }
+
+  let html = '';
+  // 整体风险指示条
+  html += `<div style="background:${overallColor}22;border:1px solid ${overallColor}44;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;">
+    <div style="width:10px;height:10px;border-radius:50%;background:${overallColor};box-shadow:0 0 8px ${overallColor};"></div>
+    <span style="font-size:14px;font-weight:600;color:${overallColor};">整体评估: ${overallRisk}</span>
+    <span style="font-size:11px;color:var(--text-dim);margin-left:auto;">基于随机森林回归 · 预测跨度 1/6/12/24 小时</span>
+  </div>`;
+
+  // 参数卡片网格
+  html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;">';
+  const predictions = data.predictions || {};
+  const paramOrder = ['temperature','water_content','water_activity','level1','level2','level3','level4','level5'];
+
+  for (const key of paramOrder) {
+    const p = predictions[key];
+    if (!p) continue;
+    const riskColor = p.risk_color || '#4caf50';
+    const current = p.current !== null && p.current !== undefined ? p.current : '--';
+    const threshold = p.threshold || '--';
+
+    html += `<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:14px;border-left:3px solid ${riskColor};position:relative;">`;
+    html += `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <span style="font-size:12px;color:var(--text-dim);">${p.name}</span>
+      <span style="font-size:10px;padding:2px 8px;border-radius:10px;background:${riskColor}22;color:${riskColor};font-weight:600;">${p.risk_level}</span>
+    </div>`;
+    html += `<div style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:4px;">${current} <span style="font-size:11px;color:var(--text-dim);font-weight:400;">/ 阈值 ${threshold}</span></div>`;
+
+    // 预测值列表
+    const forecasts = p.forecasts || {};
+    if (Object.keys(forecasts).length > 0) {
+      html += '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">';
+      for (const [horizon, fc] of Object.entries(forecasts)) {
+        const fcColor = fc.exceed ? '#f44336' : fc.margin < (threshold * 0.2) ? '#ff9800' : '#4caf50';
+        const exceedIcon = fc.exceed ? ' ⚠' : '';
+        html += `<div style="background:var(--bg);border-radius:8px;padding:4px 8px;font-size:10px;border:1px solid var(--border);">
+          <span style="color:var(--text-dim);">+${horizon}</span>
+          <span style="color:${fcColor};font-weight:600;margin-left:4px;">${fc.value}${exceedIcon}</span>
+        </div>`;
+      }
+      html += '</div>';
+    }
+
+    // 置信度条
+    const firstFc = Object.values(forecasts)[0];
+    if (firstFc && firstFc.confidence !== undefined) {
+      const confPct = Math.max(0, Math.min(100, firstFc.confidence * 100));
+      const confColor = confPct > 30 ? '#4caf50' : confPct > 0 ? '#ff9800' : '#f44336';
+      html += `<div style="margin-top:8px;display:flex;align-items:center;gap:6px;">
+        <span style="font-size:9px;color:var(--text-dim);">模型置信度</span>
+        <div style="flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;">
+          <div style="width:${confPct}%;height:100%;background:${confColor};border-radius:2px;"></div>
+        </div>
+        <span style="font-size:9px;color:${confColor};">${confPct.toFixed(0)}%</span>
+      </div>`;
+    }
+
+    html += '</div>';
+  }
+  html += '</div>';
+
+  el.innerHTML = html;
+}
+
+async function trainRFModel() {
+  if (!confirm('重新训练将使用本地数据库数据更新模型，耗时约1-2分钟。确认开始？')) return;
+  try {
+    const r = await fetch(API_BASE_URL + '/api/rf-prediction/train', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source: 'local' })
+    });
+    const d = await r.json();
+    alert(d.msg || '训练已启动');
+  } catch (e) {
+    alert('训练请求失败: ' + e.message);
+  }
+}
+
+// ============================================================
+// PREDICTION ANALYSIS
+// ============================================================
+// API地址自适应：本地调试使用相对路径，部署后使用Railway地址
+const API_BASE_URL = (function() {
+  const host = window.location.hostname;
+  if (host === 'localhost' || host === '127.0.0.1' || host === '0.0.0.0' || host === '') {
+    return ''; // 本地调试，使用相对路径
+  }
+  return 'https://oil-monitor-platform-production.up.railway.app'; // 线上环境
+})();
+
+async function fetchPredictionData() {
+  const content = document.getElementById('predContent');
+  if (content) content.innerHTML = '<div class="pred-loading">正在从云端获取历史数据并进行预测分析，请稍候...</div>';
+  try {
+    const r = await fetch(API_BASE_URL + '/api/prediction');
+    const d = await r.json();
+    if (d.code === 0 && d.data) {
+      state.predictionData = d.data;
+      renderPredictionPage(d.data);
+      // 预测数据加载完成后刷新主看板卡片，以显示趋势风险标签
+      if (state.currentData) renderCards(state.currentData);
+    } else {
+      if (content) content.innerHTML = '<div class="pred-loading" style="color:var(--danger)">获取预测数据失败: ' + (d.msg || '未知错误') + '</div>';
+    }
+  } catch (e) {
+    if (content) content.innerHTML = '<div class="pred-loading" style="color:var(--danger)">网络错误: ' + e.message + '</div>';
+  }
+}
+
+// 后台静默拉取预测数据（不显示加载UI，用于页面初始化时预加载）
+async function silentFetchPrediction() {
+  try {
+    const r = await fetch(API_BASE_URL + '/api/prediction');
+    const d = await r.json();
+    if (d.code === 0 && d.data) {
+      state.predictionData = d.data;
+      // 预测数据加载完后刷新主看板，让卡片显示趋势风险标签
+      if (state.currentData) renderCards(state.currentData);
+      // 如果当前已在预测页，重新渲染
+      if (document.getElementById('pagePrediction').classList.contains('active')) {
+        renderPredictionPage(d.data);
+      }
+    }
+  } catch(e) {
+    console.warn('[silentFetchPrediction] 后台预加载失败:', e);
+  }
+}
+
+function renderPredictionPage(data) {
+  const { dates, daily, predictions, generated_at, total_records, custom_thresholds } = data;
+  // Meta info
+  const metaEl = document.getElementById('predMetaInfo');
+  if (metaEl) {
+    const hasCustom = custom_thresholds && Object.keys(custom_thresholds).length > 0;
+    const customTag = hasCustom ? ' · <span style="color:var(--warning)">已使用自定义阈值</span>' : '';
+    metaEl.innerHTML = `数据范围: <span>${dates[0] || '--'} ~ ${dates[dates.length-1] || '--'}</span> · 总天数: <span>${dates.length}</span> · 数据点: <span>${total_records}</span> · 分析时间: <span>${new Date(generated_at).toLocaleString('zh-CN')}</span>${customTag}`;
+  }
+
+  const content = document.getElementById('predContent');
+  if (!content) return;
+
+  let html = '';
+
+  // 1. Risk overview cards
+  html += '<div class="pred-risk-grid">';
+  const metricOrder = ['level1','level2','level3','level4','level5','temperature','waterContent','waterActivity'];
+  for (const key of metricOrder) {
+    const p = predictions[key];
+    if (!p) continue;
+    const barPct = Math.min(100, p.risk_pct);
+    const dismissClass = p.is_dismissed ? 'dismissed' : '';
+    const dismissText = p.is_dismissed ? '已消除' : '消除';
+    const trendColor = p.trend_dir === '上升' ? '#e74c3c' : p.trend_dir === '下降' ? '#27ae60' : 'var(--text-dim)';
+    const trendIcon = p.trend_dir === '上升' ? '↑' : p.trend_dir === '下降' ? '↓' : '→';
+    const confColor = p.confidence >= 70 ? '#e74c3c' : p.confidence >= 40 ? '#f39c12' : '#27ae60';
+    html += `<div class="pred-risk-card" style="border-left-color:${p.risk_color}">
+      <button class="pred-dismiss-btn ${dismissClass}" onclick="${p.is_dismissed ? `restoreAlert('${key}')` : `dismissAlert('${key}')`}">${dismissText}</button>
+      <div class="pred-label">${p.label}</div>
+      <div class="pred-value" style="color:${p.risk_color}">${p.current_max}</div>
+      <div class="pred-threshold">阈值: ${p.threshold} ${p.unit} · 余量: ${p.margin}</div>
+      <div class="pred-threshold">平滑值: ${p.smoothed_current} · 异常点: ${p.outlier_count || 0}</div>
+      <div class="pred-risk-badge" style="background:${p.risk_color}">${p.risk_level}</div>
+      <span class="pred-trend-badge" style="background:${trendColor}22;color:${trendColor}">${trendIcon} ${p.trend_dir}</span>
+      ${p.is_periodic ? '<span class="pred-periodic-tag">周期性</span>' : ''}
+      <div class="pred-risk-bar"><div class="pred-risk-bar-fill" style="width:${barPct}%;background:${p.risk_color}"></div></div>
+      <div class="pred-detail-row">
+        <span>置信度 ${p.confidence}%</span>
+        <span>${p.pred_days > 0 ? '预计 ' + p.pred_days + ' 天' : p.pred_date.substring(0, 12)}</span>
+      </div>
+      <div class="pred-confidence-bar"><div class="pred-confidence-fill" style="width:${p.confidence}%;background:${confColor}"></div></div>
+    </div>`;
+  }
+  html += '</div>';
+
+  // 2. Particle trend chart
+  html += '<div class="pred-chart-section"><div class="pred-chart-title">颗粒度趋势 + 回归预测线</div>';
+  html += '<canvas id="predChartParticle" class="pred-chart-canvas"></canvas></div>';
+
+  // 3. Temperature trend chart
+  html += '<div class="pred-chart-section"><div class="pred-chart-title">油温趋势 + 回归预测线</div>';
+  html += '<canvas id="predChartTemp" class="pred-chart-canvas"></canvas></div>';
+
+  // 4. Water metrics trend chart
+  html += '<div class="pred-chart-section"><div class="pred-chart-title">水分指标趋势 + 回归预测线</div>';
+  html += '<canvas id="predChartWater" class="pred-chart-canvas"></canvas></div>';
+
+  // 5. Summary table
+  html += '<div class="pred-chart-section"><div class="pred-chart-title">超标预测汇总</div>';
+  html += '<div style="overflow-x:auto"><table class="pred-summary-table"><thead><tr>';
+  html += '<th>指标</th><th>当前最大</th><th>平滑值</th><th>阈值</th><th>余量</th><th>阈值占比</th><th>趋势</th><th>置信度</th><th>风险等级</th><th>预计超标</th><th>操作</th>';
+  html += '</tr></thead><tbody>';
+  for (const key of metricOrder) {
+    const p = predictions[key];
+    if (!p) continue;
+    const riskStyle = `color:${p.risk_color};font-weight:600`;
+    const periodicTag = p.is_periodic ? ' <span class="pred-periodic-tag">周期性</span>' : '';
+    const trendColor = p.trend_dir === '上升' ? '#e74c3c' : p.trend_dir === '下降' ? '#27ae60' : 'var(--text-dim)';
+    const trendIcon = p.trend_dir === '上升' ? '↑' : p.trend_dir === '下降' ? '↓' : '→';
+    const confColor = p.confidence >= 70 ? '#e74c3c' : p.confidence >= 40 ? '#f39c12' : '#27ae60';
+    const actionBtn = p.is_dismissed
+      ? `<button class="pred-restore-btn" onclick="restoreAlert('${key}')">恢复</button>`
+      : `<button class="pred-dismiss-btn" onclick="dismissAlert('${key}')">消除</button>`;
+    html += `<tr>
+      <td>${p.label}</td><td>${p.current_max} ${p.unit}</td><td>${p.smoothed_current}</td>
+      <td>${p.threshold} ${p.unit}</td><td>${p.margin}</td><td>${p.risk_pct}%</td>
+      <td style="color:${trendColor};font-weight:600">${trendIcon} ${p.trend_dir}</td>
+      <td style="color:${confColor}">${p.confidence}%</td>
+      <td style="${riskStyle}">${p.risk_level}${periodicTag}</td>
+      <td style="font-size:11px">${p.pred_days > 0 ? p.pred_days + '天' : p.pred_date.substring(0, 14)}</td>
+      <td>${actionBtn}</td>
+    </tr>`;
+  }
+  html += '</tbody></table></div></div>';
+
+  // 6. Method explanation
+  html += `<div class="pred-chart-section" style="font-size:12px;color:var(--text-secondary);line-height:1.8;">
+    <div class="pred-chart-title">分析方法说明</div>
+    <p>本分析基于最近30天全部历史采样数据，采用 <strong style="color:var(--accent)">移动中位数平滑</strong>（窗口=3）消除偶发性小波动，再使用 <strong style="color:var(--accent)">加权线性回归</strong>（指数衰减权重，近期数据权重更高）对平滑后的每日最大值进行趋势拟合，预测在当前趋势下达到预警阈值的时间。</p>
+    <p><strong style="color:var(--accent)">异常值过滤：</strong>采用IQR（四分位距）方法自动识别并标记异常数据点，避免传感器偶发错误影响趋势判断。图表中粗线为平滑趋势线，细线为原始数据。</p>
+    <p><strong style="color:var(--accent)">置信度：</strong>基于R²拟合度和数据长度综合评估，反映预测的可信程度。置信度≥70%为高可信（红色），40-70%为中等（橙色），&lt;40%为低可信（绿色）。</p>
+    <p><strong style="color:var(--accent)">阈值自定义：</strong>在"设置"页面可修改各指标的预警阈值，修改后预测分析和报警推送将实时使用新阈值重新计算。</p>
+    <p><strong style="color:var(--accent)">风险等级：</strong>安全(&lt;60%) · 低风险(60-80%) · 中风险(80-90%) · 高风险(&gt;90%) · 已超标</p>
+  </div>`;
+
+  content.innerHTML = html;
+
+  // Draw charts after DOM is ready
+  setTimeout(() => {
+    drawPredictionChart('predChartParticle', dates,
+      [
+        { data: predictions.level1?.daily_max || [], label: 'L1(≥4μm)', color: '#00d4ff' },
+        { data: predictions.level3?.daily_max || [], label: 'L3(≥14μm)', color: '#ffa726' },
+        { data: predictions.level5?.daily_max || [], label: 'L5(≥38μm)', color: '#ab47bc' },
+      ],
+      predictions.level1?.threshold || 25,
+      predictions.level1?.slope || 0, predictions.level1?.dates || dates,
+      [
+        { data: predictions.level1?.daily_smoothed || [], label: 'L1平滑', color: '#00d4ff' },
+        { data: predictions.level3?.daily_smoothed || [], label: 'L3平滑', color: '#ffa726' },
+        { data: predictions.level5?.daily_smoothed || [], label: 'L5平滑', color: '#ab47bc' },
+      ]
+    );
+    drawPredictionChart('predChartTemp', dates,
+      [
+        { data: predictions.temperature?.daily_max || [], label: '油温最高值', color: '#ff6600' },
+        { data: predictions.temperature?.daily_avg || [], label: '油温平均值', color: '#ffaa00' },
+      ],
+      predictions.temperature?.threshold || 45,
+      predictions.temperature?.slope || 0, predictions.temperature?.dates || dates,
+      [
+        { data: predictions.temperature?.daily_smoothed || [], label: '温度平滑', color: '#ff6600' },
+      ]
+    );
+    drawPredictionChart('predChartWater', dates,
+      [
+        { data: predictions.waterContent?.daily_max || [], label: '水含量最高值', color: '#42a5f5' },
+        { data: predictions.waterActivity?.daily_max || [], label: '水活性最高值(x100)', color: '#66bb6a', scale: 0.01 },
+      ],
+      predictions.waterContent?.threshold || 150,
+      predictions.waterContent?.slope || 0, predictions.waterContent?.dates || dates,
+      [
+        { data: predictions.waterContent?.daily_smoothed || [], label: '水含量平滑', color: '#42a5f5' },
+      ]
+    );
+  }, 50);
+}
+
+function drawPredictionChart(canvasId, dates, datasets, threshold, slope, predDates, smoothedSets) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = 260 * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = '260px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const W = rect.width, H = 260;
+  const pad = { top: 20, right: 20, bottom: 40, left: 55 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  // Find data range
+  let allVals = [];
+  for (const ds of datasets) {
+    for (let i = 0; i < ds.data.length; i++) {
+      const v = ds.scale ? ds.data[i] * ds.scale : ds.data[i];
+      allVals.push(v);
+    }
+  }
+  allVals.push(threshold);
+  if (allVals.length === 0) return;
+  const yMin = 0;
+  const yMax = Math.max(...allVals) * 1.15;
+  const xLen = dates.length;
+
+  const xScale = (i) => pad.left + (i / Math.max(1, xLen - 1)) * cw;
+  const yScale = (v) => pad.top + ch - (v - yMin) / (yMax - yMin) * ch;
+
+  // Background
+  ctx.fillStyle = 'rgba(0,0,0,0)';
+  ctx.clearRect(0, 0, W, H);
+
+  // Grid lines
+  ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+  ctx.lineWidth = 0.5;
+  for (let i = 0; i <= 5; i++) {
+    const y = pad.top + ch * i / 5;
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y); ctx.stroke();
+  }
+
+  // Y axis labels
+  ctx.fillStyle = 'rgba(255,255,255,0.4)';
+  ctx.font = '10px sans-serif';
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const v = yMin + (yMax - yMin) * (5 - i) / 5;
+    const y = pad.top + ch * i / 5;
+    ctx.fillText(v.toFixed(1), pad.left - 6, y + 3);
+  }
+
+  // X axis labels (dates)
+  ctx.textAlign = 'center';
+  const step = Math.max(1, Math.floor(xLen / 8));
+  for (let i = 0; i < xLen; i += step) {
+    const x = xScale(i);
+    const label = dates[i] ? dates[i].substring(5) : '';
+    ctx.fillText(label, x, H - pad.bottom + 16);
+  }
+
+  // Threshold line
+  ctx.strokeStyle = '#e74c3c';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([6, 4]);
+  const ty = yScale(threshold);
+  ctx.beginPath(); ctx.moveTo(pad.left, ty); ctx.lineTo(W - pad.right, ty); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle = '#e74c3c';
+  ctx.textAlign = 'left';
+  ctx.fillText('阈值 ' + threshold, W - pad.right - 60, ty - 4);
+
+  // Data lines
+  for (const ds of datasets) {
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    let started = false;
+    for (let i = 0; i < ds.data.length; i++) {
+      const v = ds.scale ? ds.data[i] / ds.scale : ds.data[i];
+      const x = xScale(i);
+      const y = yScale(v);
+      if (!started) { ctx.moveTo(x, y); started = true; }
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Data points
+    for (let i = 0; i < ds.data.length; i++) {
+      const v = ds.scale ? ds.data[i] / ds.scale : ds.data[i];
+      const x = xScale(i);
+      const y = yScale(v);
+      ctx.fillStyle = ds.color;
+      ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill();
+    }
+
+    // Regression line (if slope > 0)
+    if (Math.abs(ds.slope || slope) > 0.001) {
+      const s = ds.slope || slope;
+      // Calculate intercept from first data point
+      const firstV = ds.scale ? ds.data[0] / (ds.scale || 1) : ds.data[0];
+      const intercept = firstV;
+      ctx.strokeStyle = ds.color;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.globalAlpha = 0.6;
+      ctx.beginPath();
+      const y0 = yScale(intercept);
+      const yEnd = yScale(intercept + s * (ds.data.length - 1));
+      ctx.moveTo(xScale(0), y0);
+      ctx.lineTo(xScale(ds.data.length - 1), yEnd);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Draw smoothed lines (thicker, semi-transparent)
+  if (smoothedSets && smoothedSets.length > 0) {
+    for (const ss of smoothedSets) {
+      if (!ss.data || ss.data.length === 0) continue;
+      ctx.strokeStyle = ss.color;
+      ctx.lineWidth = 3;
+      ctx.globalAlpha = 0.5;
+      ctx.beginPath();
+      let started = false;
+      for (let i = 0; i < ss.data.length; i++) {
+        const v = ss.data[i];
+        if (v === 0 && ss.data[i] === undefined) continue;
+        const x = xScale(i);
+        const y = yScale(v);
+        if (!started) { ctx.moveTo(x, y); started = true; }
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  // Legend
+  ctx.font = '11px sans-serif';
+  let lx = pad.left + 10;
+  for (const ds of datasets) {
+    ctx.fillStyle = ds.color;
+    ctx.fillRect(lx, pad.top + 4, 14, 3);
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.textAlign = 'left';
+    ctx.fillText(ds.label, lx + 18, pad.top + 10);
+    lx += ctx.measureText(ds.label).width + 36;
+  }
+}
+
+async function dismissAlert(metric) {
+  if (!confirm('确认消除该指标的风险报警？')) return;
+  try {
+    const r = await fetch(API_BASE_URL + '/api/prediction/dismiss', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ metric, reason: '手动消除' })
+    });
+    const d = await r.json();
+    if (d.code === 0) {
+      state.predictionData = null; // force refresh
+      fetchPredictionData();
+    }
+  } catch (e) {
+    alert('操作失败: ' + e.message);
+  }
+}
+
+async function restoreAlert(metric) {
+  try {
+    const r = await fetch(API_BASE_URL + '/api/prediction/restore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ metric })
+    });
+    const d = await r.json();
+    if (d.code === 0) {
+      state.predictionData = null;
+      fetchPredictionData();
+    }
+  } catch (e) {
+    alert('操作失败: ' + e.message);
+  }
+}
+
+// ============================================================
+// THRESHOLD CONFIGURATION
+// ============================================================
+const PRED_METRIC_LABELS = {
+  level1: '颗粒度L1(≥4μm)', level2: '颗粒度L2(≥6μm)', level3: '颗粒度L3(≥14μm)',
+  level4: '颗粒度L4(≥21μm)', level5: '颗粒度L5(≥38μm)',
+  temperature: '油温', waterContent: '水含量', waterActivity: '水活性',
+};
+const PRED_METRIC_UNITS = {
+  level1: '个/100ml', level2: '个/100ml', level3: '个/100ml',
+  level4: '个/100ml', level5: '个/100ml',
+  temperature: '℃', waterContent: 'ppm', waterActivity: 'aw',
+};
+const ALARM_CATEGORY_LABELS = {
+  particle: '颗粒度', temperature: '温度', waterContent: '水含量', waterActivity: '水活性',
+};
+const ALARM_FIELD_LABELS = {
+  warning: '警告', critical: '严重', highWarn: '警告', highCritical: '严重',
+};
+
+let _thresholdDefaults = { prediction: {}, alarm: {} };
+
+async function loadThresholdConfig() {
+  try {
+    const r = await fetch(API_BASE_URL + '/api/thresholds');
+    const d = await r.json();
+    if (d.code !== 0 || !d.data) return;
+    const { prediction, alarm, defaults } = d.data;
+    _thresholdDefaults = defaults || { prediction: {}, alarm: {} };
+
+    // 预测阈值
+    const predGrid = document.getElementById('thresholdPredGrid');
+    if (predGrid) {
+      let html = '';
+      for (const [key, label] of Object.entries(PRED_METRIC_LABELS)) {
+        const val = prediction[key] || _thresholdDefaults.prediction[key] || '';
+        const defVal = _thresholdDefaults.prediction[key] || '';
+        const isCustom = prediction[key] && prediction[key] !== defVal;
+        html += `<div class="threshold-row">
+          <label>${label}</label>
+          <input type="number" step="any" id="thresh_pred_${key}" value="${val}" placeholder="${defVal}">
+          <span class="unit">${PRED_METRIC_UNITS[key]}</span>
+          ${isCustom ? '<span class="default-hint">已自定义</span>' : ''}
+        </div>`;
+      }
+      predGrid.innerHTML = html;
+    }
+
+    // 报警阈值
+    const alarmGrid = document.getElementById('thresholdAlarmGrid');
+    if (alarmGrid) {
+      let html = '';
+      for (const [cat, catLabel] of Object.entries(ALARM_CATEGORY_LABELS)) {
+        const catVals = alarm[cat] || {};
+        const defVals = _thresholdDefaults.alarm[cat] || {};
+        for (const [field, fieldLabel] of Object.entries(ALARM_FIELD_LABELS)) {
+          if (!defVals[field] && defVals[field] !== 0) continue;
+          // Only show fields that exist in defaults for this category
+          if (!defVals[field] && defVals[field] !== 0) continue;
+          const val = catVals[field] !== undefined ? catVals[field] : defVals[field];
+          html += `<div class="threshold-row">
+            <label>${catLabel}-${fieldLabel}</label>
+            <input type="number" step="any" id="thresh_alarm_${cat}_${field}" value="${val}" placeholder="${defVals[field]}">
+            <span class="unit">${PRED_METRIC_UNITS[cat === 'particle' ? 'level1' : cat] || ''}</span>
+          </div>`;
+        }
+      }
+      alarmGrid.innerHTML = html;
+    }
+  } catch (e) {
+    console.error('[Threshold] 加载失败:', e);
+  }
+}
+
+async function saveThresholdConfig() {
+  const predGrid = document.getElementById('thresholdPredGrid');
+  const alarmGrid = document.getElementById('thresholdAlarmGrid');
+  const msgEl = document.getElementById('thresholdMsg');
+
+  const payload = {};
+
+  // 收集预测阈值
+  if (predGrid) {
+    const prediction = {};
+    for (const key of Object.keys(PRED_METRIC_LABELS)) {
+      const input = document.getElementById('thresh_pred_' + key);
+      if (input && input.value !== '') {
+        const v = parseFloat(input.value);
+        if (!isNaN(v) && v > 0) prediction[key] = v;
+      }
+    }
+    if (Object.keys(prediction).length > 0) payload.prediction = prediction;
+  }
+
+  // 收集报警阈值
+  if (alarmGrid) {
+    const alarm = {};
+    for (const cat of Object.keys(ALARM_CATEGORY_LABELS)) {
+      for (const field of Object.keys(ALARM_FIELD_LABELS)) {
+        const input = document.getElementById('thresh_alarm_' + cat + '_' + field);
+        if (input && input.value !== '') {
+          const v = parseFloat(input.value);
+          if (!isNaN(v) && v >= 0) {
+            if (!alarm[cat]) alarm[cat] = {};
+            alarm[cat][field] = v;
+          }
+        }
+      }
+    }
+    if (Object.keys(alarm).length > 0) payload.alarm = alarm;
+  }
+
+  if (Object.keys(payload).length === 0) {
+    if (msgEl) { msgEl.textContent = '未修改任何阈值'; msgEl.style.color = 'var(--warning)'; msgEl.style.display = 'block'; }
+    return;
+  }
+
+  try {
+    const r = await fetch(API_BASE_URL + '/api/thresholds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    const d = await r.json();
+    if (d.code === 0) {
+      if (msgEl) { msgEl.textContent = '阈值已保存，预测和报警将使用新阈值'; msgEl.style.color = 'var(--success)'; msgEl.style.display = 'block'; }
+      // 刷新前端阈值缓存
+      loadThresholdConfig();
+      // 刷新预测数据
+      state.predictionData = null;
+    } else {
+      if (msgEl) { msgEl.textContent = '保存失败: ' + (d.msg || ''); msgEl.style.color = 'var(--danger)'; msgEl.style.display = 'block'; }
+    }
+  } catch (e) {
+    if (msgEl) { msgEl.textContent = '网络错误: ' + e.message; msgEl.style.color = 'var(--danger)'; msgEl.style.display = 'block'; }
+  }
+}
+
+async function resetThresholds() {
+  if (!confirm('确认恢复所有阈值为默认值？')) return;
+  try {
+    const r = await fetch(API_BASE_URL + '/api/thresholds', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reset: true }),
+    });
+    const d = await r.json();
+    if (d.code === 0) {
+      loadThresholdConfig();
+      state.predictionData = null;
+      const msgEl = document.getElementById('thresholdMsg');
+      if (msgEl) { msgEl.textContent = '已恢复默认阈值'; msgEl.style.color = 'var(--accent)'; msgEl.style.display = 'block'; }
+    }
+  } catch (e) {
+    alert('操作失败: ' + e.message);
+  }
+}
+
+// 动态加载报警阈值到CFG
+async function loadAlarmThresholdsToCFG() {
+  try {
+    const r = await fetch(API_BASE_URL + '/api/thresholds');
+    const d = await r.json();
+    if (d.code === 0 && d.data) {
+      const alarm = d.data.alarm;
+      if (alarm.particle) { CFG.thresholds.particle = { ...alarm.particle }; }
+      if (alarm.temperature) {
+        CFG.thresholds.temperature = {
+          low: CFG.thresholds.temperature.low || 10,
+          highWarn: alarm.temperature.highWarn,
+          highCritical: alarm.temperature.highCritical,
+        };
+      }
+      if (alarm.waterContent) { CFG.thresholds.waterContent = { ...alarm.waterContent }; }
+      if (alarm.waterActivity) { CFG.thresholds.waterActivity = { ...alarm.waterActivity }; }
+    }
+  } catch (e) {
+    console.warn('[CFG] 加载报警阈值失败，使用默认值');
+  }
+}
+
+// ============================================================
+// INIT
+// ============================================================
+async function init() {
+  try {
+    const savedTheme = localStorage.getItem('oil_theme');
+    if (savedTheme) applyTheme(savedTheme);
+    const savedLang = localStorage.getItem('oil_lang');
+    if (savedLang) applyLang(savedLang);
+    const savedBrightness = localStorage.getItem('oil_brightness');
+    if (savedBrightness) {
+      state.brightness = parseInt(savedBrightness);
+      document.getElementById('sliderBrightness').value = savedBrightness;
+      document.getElementById('valBrightness').textContent = savedBrightness + '%';
+    }
+    const savedContrast = localStorage.getItem('oil_contrast');
+    if (savedContrast) {
+      state.contrast = parseInt(savedContrast);
+      document.getElementById('sliderContrast').value = savedContrast;
+      document.getElementById('valContrast').textContent = savedContrast + '%';
+    }
+    applyDisplayFilters();
+  } catch(e) {}
+
+  applyI18n();
+  initParticles();
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  state.historyData = [];
+  state.currentData = null;
+
+  await refreshData();
+  initChartTooltips();
+
+  // 后台预加载预测数据，打开网址后自动拉取，无需手动点击预测页
+  silentFetchPrediction();
+
+  // 加载自定义阈值到设置页和CFG
+  loadThresholdConfig();
+  loadAlarmThresholdsToCFG();
+
+  // Set default date range for trend controls
+  const now = new Date();
+  const weekAgo = new Date(Date.now() - 7 * 24 * 3600 * 1000);
+  document.getElementById('trendEndDate').value = now.toISOString().substring(0, 10);
+  document.getElementById('trendStartDate').value = weekAgo.toISOString().substring(0, 10);
+
+  window.addEventListener('resize', () => {
+    drawDashboardCharts();
+    if (document.getElementById('pageTrend').classList.contains('active')) drawTrendCharts();
+    if (document.getElementById('pagePrediction').classList.contains('active') && state.predictionData) {
+      renderPredictionPage(state.predictionData);
+    }
+  });
+}
+
+init();
+</script>
+</body>
+</html>
